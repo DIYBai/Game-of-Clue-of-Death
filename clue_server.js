@@ -182,12 +182,17 @@ function serveFile( req, res )
 function serveDynamic( req, res )
 {
     var kvs = getFormValuesFromURL( req.url );
-    if( req.url.indexOf( "ready?" ) >= 0 )
+    if( req.url.indexOf( "ready" ) >= 0 ) //since no variables are passed, there is no question mark in the url
     {
       res.writeHead(200);
       readyPlayers++;
       playing = (readyPlayers == players);
+      console.log("readyPlayers: " + readyPlayers +" players: "+players+" playing: "+playing);
       res.end("Readied up succesffuly");
+      if (playing === true)
+      {
+        req.url="/play.html";
+      }
       //make this redirect to play.html when playing is true [also constantly evaluate playing]
     }
     else
