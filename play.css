@@ -1,4 +1,9 @@
 .cell {
   border-style:solid;
+  border-color:red;
   text-align:center;
+  color: white;
+  }
+.head {
+  background-color: black;
 }
