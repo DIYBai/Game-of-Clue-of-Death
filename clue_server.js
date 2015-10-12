@@ -107,27 +107,55 @@ function serveDynamic( req, res )
       var message = "readyPlayers: " + readyPlayers + "\nplayers: " + players;
       redirect(res, playing, message);
     }
-    if( req.url.indexOf( "select_Room?" ) >= 0 )
-    {
-        kvs.i = parseInt( kvs.i );
-        kvs.j = parseInt( kvs.j );
-        pixels[ kvs.i ][ kvs.j ] = kvs.c;
-        changes.push( kvs );
-        res.writeHead( 200 );
-        res.end( "" );
-        console.log( "Set pixel ("+kvs.i+","+kvs.j+") to "+kvs.c );
-    }
+    // else if( req.url.indexOf( "select_Room?" ) >= 0 )
+    // {
+    //     kvs.i = parseInt( kvs.i );
+    //     kvs.j = parseInt( kvs.j );
+    //     pixels[ kvs.i ][ kvs.j ] = kvs.c;
+    //     changes.push( kvs );
+    //     res.writeHead( 200 );
+    //     res.end( "" );
+    //     console.log( "Set pixel ("+kvs.i+","+kvs.j+") to "+kvs.c );
+    // }
     else if( req.url.indexOf( "get_update?" ) >= 0 )
     {
-        //////
-        res.writeHead( 200 );
-        res.end( JSON.stringify( response_obj ) );
+      getPlayersFromTable( function( playerArray )
+          {
+            response_obj = playerArray;
+            console.log("response_obj:" + response_obj);
+            res.writeHead( 200 );
+            res.end( JSON.stringify( response_obj ) );
+          });
     }
     else
     {
         res.writeHead( 404 );
         res.end( "Unknown URL: " + req.url );
     }
+}
+
+function getPlayersFromTable(callback)
+{
+  var db = new sql.Database( 'players.sqlite' );
+  var returnArray = [];
+  db.all( "SELECT * FROM UsersPlaying",
+            function (err, rows)
+            {
+                if(err)
+                {
+                  console.log(err);
+                  return;
+                }
+                for(var i = 0; i < rows.length; i++)
+                {
+                  var item = new Object();
+                  item.xpos = rows[i].xpos;
+                  item.ypos = rows[i].ypos;
+                  item.playerName = rows[i].playerName;
+                  returnArray.push(item);
+                }
+                callback(returnArray);
+            } );
 }
 
 function redirect(res, playingBool, messageString)
