@@ -49,6 +49,7 @@ function pollServer()
 
 function response( evt )
 {
+    console.log("response called");
     var xhr = evt.target;
     //console.log( xhr.responseText );
     var player_data = JSON.parse( xhr.responseText );
@@ -70,10 +71,11 @@ function response( evt )
               }
             }
             cell.innerHTML = cell_content;
-            cell.style.backgroundColor = "white";
+            cell.style.backgroundColor = "black";
             //cell.addEventListener( 'onclick', selectRoom );
         }
     }
+    console.log("set timeout");
     window.setTimeout( pollServer, 1000 );
 }
 

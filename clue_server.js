@@ -102,6 +102,8 @@ function serveDynamic( req, res )
         var db = new sql.Database('players.sqlite');
         db.all("UPDATE UsersPlaying SET xpos=" +
         newX + ", ypos=" + newY + " WHERE ip = '" + ipAddress + "'");
+        res.writeHead(200);
+        res.end("");
     }
     else if( req.url.indexOf( "get_update?" ) >= 0 )
     {

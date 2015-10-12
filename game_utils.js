@@ -96,6 +96,7 @@ function initializePlayers(map)
   db.all("UPDATE UsersPlaying SET xpos=" + center + ", ypos=" + center);
   //how to update random row?
   db.all("UPDATE UsersPlaying ORDER BY RANDOM() LIMIT 1 SET murdererBool='true'");
+  // db.all("UPDATE UsersPlaying SET murdererBool='true' WHERE playerID"+ "=" + randomInt);
 }
 
 function updatePlayerLocation(map, x, y, ipAddress)
