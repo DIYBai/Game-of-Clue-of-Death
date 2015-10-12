@@ -93,33 +93,14 @@ function serveDynamic( req, res )
       res.writeHead(200);
       readyPlayers++;
       playing = (readyPlayers == players);
-      console.log("readyPlayers: " + readyPlayers +" players: " + players + " playing: "+playing);
-      res.end("Readied up successfully");
-      if (true || playing === true)
-      {
-        // req.url = "/play.html";
-        // serverFun(req, res);
-        window.location = "/play.html"
-      }
-      else
-      {
-        goToWaiting(req, res);
-      }
+      redirect(res, playing, "Readied up successfully");
     }
     else if (req.url.indexOf("waiting") >= 0 )
     {
       console.log("Waiting");
       res.writeHead(200);
-      res.end("readyPlayers: " + readyPlayers +" players: " + players + " playing: "+playing);
-      if (playing === true)
-      {
-        req.url="/play.html";
-        serveFile(req, res);
-      }
-      else
-      {
-        goToWaiting(req, res);
-      }
+      var message = "readyPlayers: " + readyPlayers + "\nplayers: " + players;
+      redirect(res, playing, message);
     }
     else
     {
@@ -128,10 +109,30 @@ function serveDynamic( req, res )
     }
 }
 
-function goToWaiting(req, res)
+function redirect(res, playingBool, messageString)
 {
-  req.url = "waiting";
-  setTimeout(serverFun, 1000, req, res);
+  console.log("redirect function playing bool:" + playingBool);
+  // if (playingBool === true)
+  if(true)  //temporary, for testing purposes
+  {
+    res.end("<html><body>" + mesasgeString +
+    "<script>" +
+      "function goToPlay(){ " +
+        "window.location = '/play.html';" +
+      "}" +
+      "window.setTimeout(goToPlay, 1000);" +
+    "</script></body></html>")
+  }
+  else
+  {
+    res.end("<html><body>" + messageString +
+    "<script>" +
+      "function goToWait(){ " +
+        "window.location = '/waiting';" +
+      "}" +
+      "window.setTimeout(goToWait, 1000);" +
+    "</script></body></html>")
+  }
 }
 
 function getFormValuesFromURL( url )
