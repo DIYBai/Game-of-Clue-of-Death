@@ -98,7 +98,7 @@ function initializePlayers(map)
   //db.all("UPDATE UsersPlaying ORDER BY RANDOM() LIMIT 1 SET murdererBool='true'");
   db.all("SELECT * FROM UsersPlaying ORDER BY RANDOM() LIMIT 1", function(err, rows)
   {
-    db.run("UPDATE UsersPlaying SET murdererBool='true' WHERE ip=" + rows[0].ip;
+    db.run("UPDATE UsersPlaying SET murdererBool='true' WHERE ip=" + rows[0].ip);
   });
 
 }

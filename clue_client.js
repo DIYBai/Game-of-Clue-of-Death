@@ -1,5 +1,6 @@
 var the_grid     = document.getElementById( 'grid' );
 var size = 5;
+var cell_select = null;
 // var myx = 0;
 // var myy = 0;
 
@@ -29,11 +30,26 @@ function pageLoaded()
 
 function selectRoom( evt )
 {
-    var cell = evt.target;
-    console.log("cell " + cell.id + " should be yellow");
-    cell.style.backgroundColor = "yellow";
+    //if evt.target is in the right place
+    if (cell_select != null)
+    {
+      console.log("cell before: "+ cell_select.id);
+      cell_select.style.backgroundColor="transparent";
+    }
+    cell_select = evt.target;
+    console.log("cell " + cell_select.id + " is selected");
+    {cell_select.style.backgroundColor = "red";}
+    // for( var i = 0; i < size; i++ )
+    // {
+    //     for( var j = 0; j < size; j++ )
+    //     {
+    //         var all_cell = document.getElementById( "x"+i+"y"+j );
+    //         if (all_cell != cell)
+    //         {all_cell.style.backgroundColor = "transparent";}
+    //     }
+    // }
     var xhr = new XMLHttpRequest();
-    var url = "select_room?i=" + cell.x + "&j=" + cell.y;
+    var url = "select_room?i=" + cell_select.x + "&j=" + cell_select.y;
     xhr.open( "get", url, true );
     xhr.send();
 }
@@ -71,7 +87,11 @@ function response( evt )
               }
             }
             cell.innerHTML = cell_content;
-            cell.style.backgroundColor = "black";
+            //cell.style.backgroundColor = "transparent";
+            if (cell_select)
+            {cell_select.style.backgroundColor="transparent";}
+            else
+            {cell_select = null;}
             //cell.addEventListener( 'onclick', selectRoom );
         }
     }
