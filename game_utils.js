@@ -91,18 +91,18 @@ function generateMap(size)
 //what does this function do? -DB
 function initializePlayers(map)
 {
-  var center = map.length/2;
+  var center = Math.floor(map.length/2);
   var db = new sql.Database( 'players.sqlite' );
-  db.all("UPDATE UsersPlaying SET xpos=" + center + " SET ypos=" + center);
+  db.all("UPDATE UsersPlaying SET xpos=" + center + ", ypos=" + center);
   //how to update random row?
-  db.all("UPDATE UsersPlaying ORDER BY RANDOM() LIMIT 1 SET murdererBool=true");
+  db.all("UPDATE UsersPlaying ORDER BY RANDOM() LIMIT 1 SET murdererBool='true'");
 }
 
 function updatePlayerLocation(map, x, y, ipAddress)
 {
   var db = new sql.Database( 'players.sqlite' );
   db.all("UPDATE UsersPlaying SET xpos=" + x
-  + " SET ypos=" + y + " WHERE ip=" + ipAddress);
+  + ", ypos=" + y + " WHERE ip=" + ipAddress);
   db.all("SELECT * FROM Users",
     function( err, rows ) {
       if (err != null)
@@ -122,6 +122,11 @@ function updatePlayerLocation(map, x, y, ipAddress)
   } );
 }
 
+function getRandomInt(min, max)
+{
+  return Math.floor(Math.random() * (max-min))+min;
+}
+
 exports.checkNewPlayerHelper = checkNewPlayerHelper;
 exports.getPlayersFromTable = getPlayersFromTable;
 exports.addUser = addUser;
@@ -129,3 +134,4 @@ exports.initializeGame = initializeGame;
 exports.generateMap = generateMap;
 exports.initializePlayers = initializePlayers;
 exports.updatePlayerLocation = updatePlayerLocation;
+exports.getRandomInt = getRandomInt;

@@ -1,6 +1,5 @@
 var the_grid     = document.getElementById( 'grid' );
 var size = 5;
-// var color = "yellow";
 // var myx = 0;
 // var myy = 0;
 
@@ -19,8 +18,7 @@ function pageLoaded()
             cell_elem.x = i;
             cell_elem.y = j;
             cell_elem.id = "x"+i+"y"+j;
-            //cell_elem.addEventListener( 'mouseclick', selectRoom );
-            // cell_elem.mouseenter = mousePixel;
+            cell_elem.addEventListener( 'click', selectRoom );
             row_elem.appendChild( cell_elem );
         }
         the_grid.appendChild( row_elem );
@@ -29,23 +27,21 @@ function pageLoaded()
     window.setTimeout( pollServer, 100 );
 }
 
-// function selectRoom( evt )
-// {
-//     if( evt.buttons > 0 )
-//     {
-//         var cell = evt.target;
-//         //console.log( "mousePixel "+color );
-//         cell.style.backgroundColor = color;
-//         var xhr = new XMLHttpRequest();
-//         var url = "selectRoom?i=" + cell.i + "&j=" + cell.j;
-//         xhr.open( "get", url, true );
-//         xhr.send();
-//     }
-// }
+function selectRoom( evt )
+{
+    var cell = evt.target;
+    console.log("cell " + cell.id + " should be yellow");
+    cell.style.backgroundColor = "yellow";
+    var xhr = new XMLHttpRequest();
+    var url = "select_room?i=" + cell.x + "&j=" + cell.y;
+    xhr.open( "get", url, true );
+    xhr.send();
+}
 
 function pollServer()
 {
     var xhr = new XMLHttpRequest();
+    console.log("polling");
     xhr.open( "get", "get_update?", true );
     xhr.addEventListener( "load", response );
     xhr.send();
@@ -74,6 +70,8 @@ function response( evt )
               }
             }
             cell.innerHTML = cell_content;
+            cell.style.backgroundColor = "white";
+            //cell.addEventListener( 'onclick', selectRoom );
         }
     }
     window.setTimeout( pollServer, 1000 );
