@@ -107,6 +107,22 @@ function serveDynamic( req, res )
       var message = "readyPlayers: " + readyPlayers + "\nplayers: " + players;
       redirect(res, playing, message);
     }
+    if( req.url.indexOf( "select_Room?" ) >= 0 )
+    {
+        kvs.i = parseInt( kvs.i );
+        kvs.j = parseInt( kvs.j );
+        pixels[ kvs.i ][ kvs.j ] = kvs.c;
+        changes.push( kvs );
+        res.writeHead( 200 );
+        res.end( "" );
+        console.log( "Set pixel ("+kvs.i+","+kvs.j+") to "+kvs.c );
+    }
+    else if( req.url.indexOf( "get_update?" ) >= 0 )
+    {
+        //////
+        res.writeHead( 200 );
+        res.end( JSON.stringify( response_obj ) );
+    }
     else
     {
         res.writeHead( 404 );

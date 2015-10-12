@@ -36,7 +36,7 @@ function selectRoom( evt )
         //console.log( "mousePixel "+color );
         cell.style.backgroundColor = color;
         var xhr = new XMLHttpRequest();
-        var url = "selectRoom?i=" + cell.i + "&j=" + cell.j;
+        var url = "select_room?i=" + cell.i + "&j=" + cell.j;
         xhr.open( "get", url, true );
         xhr.send();
     }
