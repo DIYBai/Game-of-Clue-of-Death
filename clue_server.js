@@ -5,6 +5,7 @@ var sql = require( 'sqlite3');
 var playing = false;
 var players = 0;
 var readyPlayers = 0;
+var gameMap;
 
 function serverFun( req, res )
 {
@@ -176,7 +177,7 @@ function addUser( req, res )
 function initializeGame()
 {
   var gameMap = generateMap(5); //change to accomdate number of players later
-
+  initializeUsers(gameMap);
 }
 
 function generateMap(size)
@@ -208,28 +209,16 @@ function initializeUsers(map)
 {
   var center = map.length/2;
   var db = new sql.Database( 'players.sqlite' );
-  db.all("UPDATE UsersPlaying SET xpos=" + center);//,
-    // function( err, rows ) {
-    //   if (err != null)
-    //   {
-    //     console.log(err);
-    //     return;
-    //   }
-    //   for( var i = 0; i < rows; i++ )
-    //   {
-    //     rows[i].xpos = center;
-    //     rows[i].ypos = center;
-    //     map[x][y].player.push(rows[i].playerName);  //changed field name because 'name' may be reserved -DB
-    //
-    //     //maybe add a field to map[x][y] (AKA a cell) to indicate player and items
-    //     //instead of JUST being represented by a string -DB
-    //   }
-    // }
+  db.all("UPDATE UsersPlaying SET xpos=" + center + " SET ypos=" + center);
+  //how to update random row?
+  db.all("UPDATE UsersPlaying ORDER BY RANDOM() LIMIT 1 SET murdererBool=true");
 }
 
-function updatePlayerLocation(map)
+function updatePlayerLocation(map, x, y, ipAddress)
 {
   var db = new sql.Database( 'players.sqlite' );
+  db.all("UPDATE UsersPlaying SET xpos=" + x
+  + " SET ypos=" + y + " WHERE ip=" + ipAddress);
   db.all("SELECT * FROM Users",
     function( err, rows ) {
       if (err != null)
