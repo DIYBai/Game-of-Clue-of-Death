@@ -92,7 +92,11 @@ function serveDynamic( req, res )
     {
       res.writeHead(200);
       readyPlayers++;
-      playing = (readyPlayers == players);
+      if(readyPlayers == players)
+      {
+        playing = true;
+        initializeGame();
+      }
       redirect(res, playing, "Readied up successfully");
     }
     else if (req.url.indexOf("waiting") >= 0 )
@@ -115,7 +119,7 @@ function redirect(res, playingBool, messageString)
   // if (playingBool === true)
   if(true)  //temporary, for testing purposes
   {
-    res.end("<html><body>" + mesasgeString +
+    res.end("<html><body>" + messageString +
     "<script>" +
       "function goToPlay(){ " +
         "window.location = '/play.html';" +
@@ -169,8 +173,13 @@ function addUser( req, res )
     players++;
 }
 
+function initializeGame()
+{
+  var gameMap = generateMap(5); //change to accomdate number of players later
 
-function generate(size)
+}
+
+function generateMap(size)
 {
     var map = [];
     for (var i=0; i<size; i++)
@@ -197,7 +206,25 @@ function generate(size)
 //what does this function do? -DB
 function initializeUsers(map)
 {
-  var center = map.length/2
+  var center = map.length/2;
+  var db = new sql.Database( 'players.sqlite' );
+  db.all("UPDATE UsersPlaying SET xpos=" + center);//,
+    // function( err, rows ) {
+    //   if (err != null)
+    //   {
+    //     console.log(err);
+    //     return;
+    //   }
+    //   for( var i = 0; i < rows; i++ )
+    //   {
+    //     rows[i].xpos = center;
+    //     rows[i].ypos = center;
+    //     map[x][y].player.push(rows[i].playerName);  //changed field name because 'name' may be reserved -DB
+    //
+    //     //maybe add a field to map[x][y] (AKA a cell) to indicate player and items
+    //     //instead of JUST being represented by a string -DB
+    //   }
+    // }
 }
 
 function updatePlayerLocation(map)
