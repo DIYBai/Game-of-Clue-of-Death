@@ -1,3 +1,4 @@
+var the_grid     = document.getElementById( 'grid' );
 var size = 6
 var color = "yellow";
 var myx = 0;
@@ -12,6 +13,7 @@ function pageLoaded()
         {
             var cell_elem = document.createElement( 'td' );
             cell_elem.className="cell";
+            cell_elem.innerHTML="this is naught but a test";
             cell_elem.width=80;
             cell_elem.height=80;
             cell_elem.x = i;
@@ -22,6 +24,7 @@ function pageLoaded()
             row_elem.appendChild( cell_elem );
         }
         the_grid.appendChild( row_elem );
+        console.log("the_grid: "+the_grid);
     }
     window.setTimeout( pollServer, 100, -1 );
 }
@@ -98,7 +101,6 @@ function Response( evt )
             cell.innerHTML = room_stuff;
         }
     }
-    */
     window.setTimeout( pollServer, 100, pixel_data.version );
 }
 //maybe rename variables to prevent conflict
