@@ -91,25 +91,47 @@ function serveDynamic( req, res )
     if( req.url.indexOf( "ready" ) >= 0 ) //since no variables are passed, there is no question mark in the url
     {
       res.writeHead(200);
-      // readyPlayers++;
+      readyPlayers++;
       playing = (readyPlayers == players);
       console.log("readyPlayers: " + readyPlayers +" players: " + players + " playing: "+playing);
       res.end("Readied up successfully");
+      if (true || playing === true)
+      {
+        // req.url = "/play.html";
+        // serverFun(req, res);
+        window.location = "/play.html"
+      }
+      else
+      {
+        goToWaiting(req, res);
+      }
+    }
+    else if (req.url.indexOf("waiting") >= 0 )
+    {
+      console.log("Waiting");
+      res.writeHead(200);
+      res.end("readyPlayers: " + readyPlayers +" players: " + players + " playing: "+playing);
       if (playing === true)
       {
         req.url="/play.html";
         serveFile(req, res);
       }
-      else ()
+      else
       {
-        serveDynamic(req, res);
+        goToWaiting(req, res);
       }
     }
     else
     {
         res.writeHead( 404 );
-        res.end( "Unknown URL: "+req.url );
+        res.end( "Unknown URL: " + req.url );
     }
+}
+
+function goToWaiting(req, res)
+{
+  req.url = "waiting";
+  setTimeout(serverFun, 1000, req, res);
 }
 
 function getFormValuesFromURL( url )
