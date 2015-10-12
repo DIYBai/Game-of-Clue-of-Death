@@ -1,6 +1,6 @@
 var fs   = require( 'fs' );
 var http = require( 'http' );
-//var sql = require( 'sqlite3');
+var sql = require( 'sqlite3');
 var game = require( './game_utils.js');
 
 var playing = false;
@@ -78,7 +78,8 @@ function serveDynamic( req, res )
     {
       res.writeHead(200);
       readyPlayers++;
-      if(readyPlayers == players)
+      //if(readyPlayers == players)
+      if(true) //temp testing
       {
         playing = true;
         game.initializeGame();
@@ -92,16 +93,16 @@ function serveDynamic( req, res )
       var message = "readyPlayers: " + readyPlayers + "\nplayers: " + players;
       redirect(res, playing, message);
     }
-    // else if( req.url.indexOf( "select_Room?" ) >= 0 )
-    // {
-    //     kvs.i = parseInt( kvs.i );
-    //     kvs.j = parseInt( kvs.j );
-    //     pixels[ kvs.i ][ kvs.j ] = kvs.c;
-    //     changes.push( kvs );
-    //     res.writeHead( 200 );
-    //     res.end( "" );
-    //     console.log( "Set pixel ("+kvs.i+","+kvs.j+") to "+kvs.c );
-    // }
+    else if( req.url.indexOf( "select_room?" ) >= 0 )
+    {
+        var newX = parseInt(kvs.i);
+        var newY = parseInt(kvs.j);
+        var ipAddress = req.connection.remoteAddress;
+        console.log(newX + " | " + newY);
+        var db = new sql.Database('players.sqlite');
+        db.all("UPDATE UsersPlaying SET xpos=" +
+        newX + ", ypos=" + newY + " WHERE ip = '" + ipAddress + "'");
+    }
     else if( req.url.indexOf( "get_update?" ) >= 0 )
     {
       game.getPlayersFromTable( function( playerArray )
@@ -160,12 +161,6 @@ function getFormValuesFromURL( url )
     }
     return kvs
 }
-
-function getRandomInt(min, max)
-{
-  return Math.floor(Math.random() * (max-min))+min;
-}
-
 
 var server = http.createServer( serverFun );
 
