@@ -95,7 +95,7 @@ function initializePlayers(map)
   var db = new sql.Database( 'players.sqlite' );
   db.all("UPDATE UsersPlaying SET xpos=" + center + ", ypos=" + center);
   //how to update random row?
-  db.all("UPDATE UsersPlaying ORDER BY RANDOM() LIMIT 1 SET murdererBool='true'");
+  //db.all("UPDATE UsersPlaying ORDER BY RANDOM() LIMIT 1 SET murdererBool='true'");
   db.all("SELECT * FROM UsersPlaying ORDER BY RANDOM() LIMIT 1", function(err, rows)
   {
     db.run("UPDATE UsersPlaying SET murdererBool='true' WHERE ip=" + rows[0].ip;
