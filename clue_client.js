@@ -94,10 +94,12 @@ function respondName( evt )
   if(is_killer)
   {
     displayMessage("You are the murderer!!");
+    window.setTimeout(displayMessage, 5000, "");
   }
   else
   {
     displayMessage("You are NOT the murderer!!");
+    window.setTimeout(displayMessage, 5000, "");
   }
 }
 
@@ -105,6 +107,7 @@ function displayMessage(messageString)
 {
   var msg = document.getElementById("message");
   msg.innerHTML = messageString;
+  console.log("message should be changed to " + messageString);
 }
 
 function response( evt )
@@ -115,7 +118,7 @@ function response( evt )
     var player_data = JSON.parse( xhr.responseText );
     //console.log(player_data);
     my_player = findMe(player_data, my_name);
-    console.log("my player is: "+ my_player.playerName + " with xpos "+ my_player.xpos);
+    //console.log("my player is: "+ my_player.playerName + " with xpos "+ my_player.xpos);
     for( var i = 0; i < size; i++ )
     {
         for( var j = 0; j < size; j++ )
@@ -145,7 +148,7 @@ function findMe (players, name) //identifies which player is currently playing
   for (i = 0; i<players.length; i++)
   {
     var player = players[i];
-    console.log (player.playerName + " | " + name)
+    //console.log (player.playerName + " | " + name)
     if (player.playerName==name)
     {
       return player;
