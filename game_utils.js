@@ -16,6 +16,7 @@ function checkNewPlayerHelper( param, callback ) {
         } );
 }
 
+
 function getPlayersFromTable(callback)
 {
   var db = new sql.Database( 'players.sqlite' );
@@ -40,23 +41,22 @@ function getPlayersFromTable(callback)
             } );
 }
 
-function addUser( req, res )
+function getFormValuesFromURL( url )
 {
-    var kvs = getFormValuesFromURL( req.url );
-    var db = new sql.Database( 'players.sqlite' );
-    var name = kvs[ 'name_input' ];
-    var ipAddress = req.connection.remoteAddress;
-    //console.log(ipAddress);
-    db.run( "INSERT INTO Users(ip, playerName) VALUES ( ?, ? ) ", ipAddress, name,
-              function (err)
-              {
-                  if(err)
-                  {
-                    console.log(err);
-                  }
-              } );
-    players++;
+    var kvs = {};
+    var parts = url.split( "?" );
+    if( parts.length === 2 )
+    {
+        var key_value_pairs = parts[1].split( "&" );
+        for( var i = 0; i < key_value_pairs.length; i++ )
+        {
+            var key_value = key_value_pairs[i].split( "=" );
+            kvs[ key_value[0] ] = key_value[1];
+        }
+    }
+    return kvs
 }
+
 
 function initializeGame()
 {
@@ -132,11 +132,28 @@ function getRandomInt(min, max)
   return Math.floor(Math.random() * (max-min))+min;
 }
 
+function parseCookies( headers )
+{
+    var cookies = {};
+    var hc = headers.cookie;
+    console.log( 'cookies ', hc )
+    hc && hc.split( ';' ).forEach(
+        function( cookie )
+        {
+            var parts = cookie.split( '=' );
+            cookies[ parts.shift().trim() ] =
+                decodeURI( parts.join( '=' ) );
+        } );
+
+    return cookies;
+}
+
 exports.checkNewPlayerHelper = checkNewPlayerHelper;
 exports.getPlayersFromTable = getPlayersFromTable;
-exports.addUser = addUser;
+//exports.addUser = addUser;
 exports.initializeGame = initializeGame;
 exports.generateMap = generateMap;
 exports.initializePlayers = initializePlayers;
 exports.updatePlayerLocation = updatePlayerLocation;
 exports.getRandomInt = getRandomInt;
+exports.parseCookies = parseCookies;

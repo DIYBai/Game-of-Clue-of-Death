@@ -2,6 +2,7 @@ var fs   = require( 'fs' );
 var http = require( 'http' );
 var sql = require( 'sqlite3');
 var game = require( './game_utils.js');
+//var utils = require( './url_utils.js' );
 
 var playing = false;
 var players = 0;
@@ -13,33 +14,47 @@ function serverFun( req, res )
     // console.log( req );
     console.log( "The URL: '", req.url, "'" );
     var ipAddress = req.connection.remoteAddress;
+    var cookies = game.parseCookies( req.headers );
+
+    var session_id = '';
+    if( 'session_id' in cookies )
+    {
+        session_id = cookies.session_id;
+    }
+    res.setHeader( "Set-Cookie",
+                   [ 'session_id='+session_id] );
     if(req.url === "/" | req.url === "")
     {
-      game.checkNewPlayerHelper( ipAddress, function( bool )
-          {
-            if ( bool ) {
-              console.log("evaluated to true");
-              req.url = "/newPlayer.html";
-            }
-            else if(playing) {
-              req.url = "/play.html";
-            }
-            else {
-              req.url = "/ready.html";
-            }
-            var file_worked = serveFile(req, res);
-            if (!file_worked)
-            {
-              serveDynamic( req, res );
-            }
-          });
+      req.url = "/newPlayer.html";
+      // game.checkNewPlayerHelper( ipAddress, function( bool )
+      //     {
+      //     //   if ( bool ) {
+      //     //     console.log("evaluated to true");
+          //     req.url = "/newPlayer.html";
+          //   }
+          //   else if(playing) {
+          //     req.url = "/play.html";
+          //   }
+          //   else {
+          //     req.url = "/ready.html";
+          //   }
+       var file_worked = serveFile(req, res);
+          //   if (!file_worked)
+          //   {
+          //     serveDynamic( req, res );
+          //   }
+          // });
         //console.log("check new player " + checkNewPlayer(ipAddress));
     }
     else
     {
         if(req.url.indexOf("add_player") >= 0)
         {
-          game.addUser(req,res);
+          addUser(req,res);
+          var kvs=getFormValuesFromURL(req.url);
+          session_id = ''+kvs.name_input;
+          res.setHeader( "Set-Cookie",
+                         [ 'session_id='+session_id] );
           if(playing)
           {
             req.url = "/play.html";
@@ -84,7 +99,7 @@ function serveDynamic( req, res )
         playing = true;
         game.initializeGame();
       }
-      redirect(res, playing, "Readied up successfully");
+      redirect(res, playing, "Waiting for other players");
     }
     else if (req.url.indexOf("waiting") >= 0 )
     {
@@ -120,6 +135,24 @@ function serveDynamic( req, res )
         res.writeHead( 404 );
         res.end( "Unknown URL: " + req.url );
     }
+}
+
+function addUser( req, res )
+{
+    var kvs = getFormValuesFromURL( req.url );
+    var db = new sql.Database( 'players.sqlite' );
+    var name = kvs[ 'name_input' ];
+    var ipAddress = req.connection.remoteAddress;
+    //console.log(ipAddress);
+    db.run( "INSERT INTO Users(ip, playerName) VALUES ( ?, ? ) ", ipAddress, name,
+              function (err)
+              {
+                  if(err)
+                  {
+                    console.log(err);
+                  }
+              } );
+    players++;
 }
 
 function redirect(res, playingBool, messageString)
