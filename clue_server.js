@@ -132,6 +132,14 @@ function serveDynamic( req, res )
             res.end( JSON.stringify( response_obj ) );
           });
     }
+    else if ( req.url.indexOf( "get_player?" ) >= 0 )
+    {
+      var name = req.headers.cookie.substring(11);
+      response_obj = name
+      res.writeHead(200);
+      console.log("get player response object: " + response_obj);
+      res.end( JSON.stringify(response_obj));
+    }
     else
     {
         res.writeHead( 404 );
