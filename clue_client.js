@@ -2,6 +2,7 @@ var the_grid     = document.getElementById( 'grid' );
 var size = 5;
 var cell_select = null;
 var my_name;
+var is_killer;
 var my_player;
 var move_speed=1;
 
@@ -86,9 +87,10 @@ function pollForName()
 function respondName( evt )
 {
   var xhr = evt.target;
-  var player = JSON.parse( xhr.responseText );
-  my_name = player;
-  console.log("my name: "+ my_name);
+  var reponse = JSON.parse( xhr.responseText );
+  my_name = reponse[1];
+  is_killer = reponse[2];
+  console.log("my name: "+ my_name + " is me killer? "+ is_killer);
 }
 
 function response( evt )

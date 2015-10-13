@@ -123,7 +123,24 @@ function parseCookies( headers )
 
     return cookies;
 }
-
+function getKiller( name, callback)
+{
+  var db = new sql.Database( 'players.sqlite' );
+  db.all( "SELECT murdererBool FROM UsersPlaying WHERE playerName  " +name,
+            function (err, rows)
+            {
+                if(err)
+                {
+                  console.log(err);
+                  return;
+                }
+                var killer = (rows[0].murdererBool=="true")
+                console.log("murderer?" + killer);
+                callback(killer);
+            }
+        );
+}
+exports.getKiller = getKiller;
 exports.checkNewPlayerHelper = checkNewPlayerHelper;
 exports.getPlayersFromTable = getPlayersFromTable;
 //exports.addUser = addUser;

@@ -135,10 +135,14 @@ function serveDynamic( req, res )
     else if ( req.url.indexOf( "get_player?" ) >= 0 )
     {
       var name = req.headers.cookie.substring(11);
-      response_obj = name
-      res.writeHead(200);
-      console.log("get player response object: " + response_obj);
-      res.end( JSON.stringify(response_obj));
+      game.getKiller(name, function(is_killer){
+        response_obj[0]=name;
+        response_obj[1]=is_killer;
+        res.writeHead(200);
+        console.log("get player response object: " + response_obj[0] + reponse_obj[1]);
+        res.end( JSON.stringify(response_obj));
+      } );
+
     }
     else
     {
