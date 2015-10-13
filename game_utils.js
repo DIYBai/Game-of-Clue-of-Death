@@ -98,34 +98,33 @@ function initializePlayers(map)
   //db.all("UPDATE UsersPlaying ORDER BY RANDOM() LIMIT 1 SET murdererBool='true'");
   db.all("SELECT * FROM UsersPlaying ORDER BY RANDOM() LIMIT 1", function(err, rows)
   {
-    db.run("UPDATE UsersPlaying SET murdererBool='true' WHERE ip=" + rows[0].ip);
+    db.run("UPDATE UsersPlaying SET murdererBool='true' WHERE playerName='" + rows[0].playerName + "'");
   });
-
 }
 
-function updatePlayerLocation(map, x, y, ipAddress)
-{
-  var db = new sql.Database( 'players.sqlite' );
-  db.all("UPDATE UsersPlaying SET xpos=" + x
-  + ", ypos=" + y + " WHERE ip=" + ipAddress);
-  db.all("SELECT * FROM Users",
-    function( err, rows ) {
-      if (err != null)
-      {
-        console.log(err);
-        return;
-      }
-      for( var i = 0; i < rows; i++ )
-      {
-        var x = rows[i].xpos;
-        var y = rows[i].ypos
-        map[x][y].player.push(rows[i].playerName);  //changed field name because 'name' may be reserved -DB
-
-        //maybe add a field to map[x][y] (AKA a cell) to indicate player and items
-        //instead of JUST being represented by a string -DB
-      }
-  } );
-}
+// function updatePlayerLocation(map, x, y, ipAddress)
+// {
+//   var db = new sql.Database( 'players.sqlite' );
+//   db.all("UPDATE UsersPlaying SET xpos=" + x
+//   + ", ypos=" + y + " WHERE ip=" + ipAddress);
+//   db.all("SELECT * FROM Users",
+//     function( err, rows ) {
+//       if (err != null)
+//       {
+//         console.log(err);
+//         return;
+//       }
+//       for( var i = 0; i < rows; i++ )
+//       {
+//         var x = rows[i].xpos;
+//         var y = rows[i].ypos
+//         map[x][y].player.push(rows[i].playerName);  //changed field name because 'name' may be reserved -DB
+//
+//         //maybe add a field to map[x][y] (AKA a cell) to indicate player and items
+//         //instead of JUST being represented by a string -DB
+//       }
+//   } );
+// }
 
 function getRandomInt(min, max)
 {
@@ -154,6 +153,6 @@ exports.getPlayersFromTable = getPlayersFromTable;
 exports.initializeGame = initializeGame;
 exports.generateMap = generateMap;
 exports.initializePlayers = initializePlayers;
-exports.updatePlayerLocation = updatePlayerLocation;
+//exports.updatePlayerLocation = updatePlayerLocation;
 exports.getRandomInt = getRandomInt;
 exports.parseCookies = parseCookies;

@@ -98,14 +98,18 @@ function response( evt )
             }
             cell.innerHTML = cell_content;
             //cell.style.backgroundColor = "transparent";
-            if (cell_select)
-            {cell_select.style.backgroundColor="transparent";}
-            else
-            {cell_select = null;}
+            // if (cell_select)
+            // {
+            //   cell_select.style.backgroundColor="transparent";
+            // }
+            // else
+            // {
+            //   cell_select = null;
+            // }
             //cell.addEventListener( 'onclick', selectRoom );
         }
     }
-    console.log("set timeout");
+    //console.log("set timeout");
     window.setTimeout( pollServer, 1000 );
 }
 

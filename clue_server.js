@@ -112,11 +112,13 @@ function serveDynamic( req, res )
     {
         var newX = parseInt(kvs.i);
         var newY = parseInt(kvs.j);
-        var ipAddress = req.connection.remoteAddress;
-        console.log(newX + " | " + newY);
+        //var ipAddress = req.connection.remoteAddress;
+        var nameCookie = req.headers.cookie.substring(11);
+        console.log(nameCookie);
         var db = new sql.Database('players.sqlite');
         db.all("UPDATE UsersPlaying SET xpos=" +
-        newX + ", ypos=" + newY + " WHERE ip = '" + ipAddress + "'");
+        // newX + ", ypos=" + newY + " WHERE ip = '" + ipAddress + "'");
+        newX + ", ypos=" + newY + " WHERE playerName = '" + nameCookie + "'");
         res.writeHead(200);
         res.end("");
     }
@@ -125,7 +127,7 @@ function serveDynamic( req, res )
       game.getPlayersFromTable( function( playerArray )
           {
             response_obj = playerArray;
-            console.log("response_obj:" + response_obj);
+            //console.log("response_obj:" + response_obj);
             res.writeHead( 200 );
             res.end( JSON.stringify( response_obj ) );
           });
@@ -143,10 +145,11 @@ function addUser( req, res )
     var db = new sql.Database( 'players.sqlite' );
     var name = kvs[ 'name_input' ];
     var ipAddress = req.connection.remoteAddress;
-    //console.log(ipAddress);
-    db.run( "INSERT INTO Users(ip, playerName) VALUES ( ?, ? ) ", ipAddress, name,
+    //console.log("In add user fxn");
+    db.run( "INSERT INTO UsersPlaying(ip, playerName) VALUES ( ?, ? ) ", ipAddress, name,
               function (err)
               {
+                  console.log("In DB insert query");
                   if(err)
                   {
                     console.log(err);
