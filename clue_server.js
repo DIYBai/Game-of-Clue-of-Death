@@ -207,7 +207,12 @@ function getFormValuesFromURL( url )
     }
     return kvs
 }
+function clearPlayers()
+{
+  var db = new sql.Database( 'players.sqlite' );
+  db.run( "DELETE FROM UsersPlaying")
+}
+clearPlayers();
 
 var server = http.createServer( serverFun );
-
 server.listen( 8080 );

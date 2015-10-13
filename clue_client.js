@@ -35,8 +35,13 @@ function pageLoaded()
 function selectRoom( evt )
 {
     //if evt.target is within 1 block
-    if (evt.target.x >= my_player.xpos-move_speed && evt.target.x <= my_player.xpos+move_speed
-    && evt.target.y >= my_player.ypos-move_speed && evt.target.y <= my_player.ypos+move_speed)
+    var x_diff = evt.target.x-my_player.xpos;
+    var y_diff = evt.target.y-my_player.ypos;
+    console.log(x_diff + " | " + y_diff);
+    if ((x_diff <= move_speed)
+     && (x_diff >= -move_speed)
+    && (y_diff <= move_speed)
+    && (y_diff >= -move_speed))
     {
       if (cell_select != null)
       {
@@ -51,7 +56,7 @@ function selectRoom( evt )
           for( var j = 0; j < size; j++ )
           {
               var all_cell = document.getElementById( "x"+i+"y"+j );
-              if (all_cell != cell)
+              if (all_cell != cell_select)
               {all_cell.style.backgroundColor = "transparent";}
           }
       }
@@ -91,13 +96,13 @@ function respondName( evt )
 
 function response( evt )
 {
-    console.log("response called");
+    //console.log("response called");
     var xhr = evt.target;
     //console.log( xhr.responseText );
     var player_data = JSON.parse( xhr.responseText );
-    console.log(player_data);
+    //console.log(player_data);
     my_player = findMe(player_data, my_name);
-    console.log("my player is: "+ my_player);
+    console.log("my player is: "+ my_player.playerName + " with xpos "+ my_player.xpos);
     for( var i = 0; i < size; i++ )
     {
         for( var j = 0; j < size; j++ )
@@ -134,10 +139,12 @@ function response( evt )
 function findMe (players, name) //identifies which player is currently playing
 {
   //var cookies= utils.parseCookies( req.headers );
-  console.log (players + " | " + name)
-  for (player in players)
+
+  for (i = 0; i<players.length; i++)
   {
-    if (player.playerName=name)
+    var player = players[i];
+    console.log (player.playerName + " | " + name)
+    if (player.playerName==name)
     {
       return player;
     }
