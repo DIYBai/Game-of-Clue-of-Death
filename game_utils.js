@@ -126,7 +126,7 @@ function parseCookies( headers )
 function getKiller( name, callback)
 {
   var db = new sql.Database( 'players.sqlite' );
-  db.all( "SELECT murdererBool FROM UsersPlaying WHERE playerName  " +name,
+  db.all( "SELECT murdererBool FROM UsersPlaying WHERE playerName='" +name + "'",
             function (err, rows)
             {
                 if(err)

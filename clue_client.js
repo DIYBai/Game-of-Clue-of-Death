@@ -88,9 +88,23 @@ function respondName( evt )
 {
   var xhr = evt.target;
   var reponse = JSON.parse( xhr.responseText );
-  my_name = reponse[1];
-  is_killer = reponse[2];
+  my_name = reponse[0];
+  is_killer = reponse[1];
   console.log("my name: "+ my_name + " is me killer? "+ is_killer);
+  if(is_killer)
+  {
+    displayMessage("You are the murderer!!");
+  }
+  else
+  {
+    displayMessage("You are NOT the murderer!!");
+  }
+}
+
+function displayMessage(messageString)
+{
+  var msg = document.getElementById("message");
+  msg.innerHTML = messageString;
 }
 
 function response( evt )

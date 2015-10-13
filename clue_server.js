@@ -23,7 +23,7 @@ function serverFun( req, res )
     }
     res.setHeader( "Set-Cookie",
                    [ 'session_id='+session_id] );
-    if(req.url === "/" | req.url === "")
+    if(req.url === "/" | req.url === "" | req.url === "/index.html")
     {
       req.url = "/newPlayer.html";
       // game.checkNewPlayerHelper( ipAddress, function( bool )
@@ -135,11 +135,14 @@ function serveDynamic( req, res )
     else if ( req.url.indexOf( "get_player?" ) >= 0 )
     {
       var name = req.headers.cookie.substring(11);
+      res.writeHead(200);
       game.getKiller(name, function(is_killer){
-        response_obj[0]=name;
-        response_obj[1]=is_killer;
-        res.writeHead(200);
-        console.log("get player response object: " + response_obj[0] + reponse_obj[1]);
+        var response_obj = [];
+        response_obj.push(name);
+        response_obj.push(is_killer);
+        // response_obj[0]=name;
+        // response_obj[1]=is_killer;
+        console.log("get player response object: " + response_obj[0] + response_obj[1]);
         res.end( JSON.stringify(response_obj));
       } );
 
