@@ -126,7 +126,7 @@ function response( evt )
             var cell = document.getElementById( "x"+i+"y"+j );
             var cell_content= "";
             //for (var player in player_data)
-            for(var k = 0; k < player_data.length; k++)
+            for(var k = 0; k < player_data.length-1; k++)
             {
               var player = player_data[k];
               if (player.xpos == i && player.ypos == j)
@@ -137,7 +137,7 @@ function response( evt )
             cell.innerHTML = cell_content;
         }
     }
-    //console.log("set timeout");
+    document.getElementById("time").innerHTML = player_data[player_data.length-1];
     window.setTimeout( pollServer, 1000 );
 }
 

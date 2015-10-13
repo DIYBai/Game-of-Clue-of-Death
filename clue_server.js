@@ -8,6 +8,7 @@ var playing = false;
 var players = 0;
 var readyPlayers = 0;
 var gameMap;
+var time = 5000;
 
 function serverFun( req, res )
 {
@@ -98,6 +99,7 @@ function serveDynamic( req, res )
       {
         playing = true;
         game.initializeGame();
+        changeTime();
       }
       redirect(res, playing, "Waiting for other players");
     }
@@ -112,22 +114,16 @@ function serveDynamic( req, res )
     {
         var newX = parseInt(kvs.i);
         var newY = parseInt(kvs.j);
-        //var ipAddress = req.connection.remoteAddress;
         var nameCookie = req.headers.cookie.substring(11);
         console.log(nameCookie);
-        var db = new sql.Database('players.sqlite');
-        db.all("UPDATE UsersPlaying SET xpos=" +
-        // newX + ", ypos=" + newY + " WHERE ip = '" + ipAddress + "'");
-        newX + ", ypos=" + newY + " WHERE playerName = '" + nameCookie + "'");
-        res.writeHead(200);
-        res.end("");
+        setTimeout(selectRoomHelper, time, newX, newY, nameCookie, res);
     }
     else if( req.url.indexOf( "get_update?" ) >= 0 )
     {
       game.getPlayersFromTable( function( playerArray )
           {
             response_obj = playerArray;
-            //console.log("response_obj:" + response_obj);
+            response_obj.push(time);
             res.writeHead( 200 );
             res.end( JSON.stringify( response_obj ) );
           });
@@ -140,8 +136,6 @@ function serveDynamic( req, res )
         var response_obj = [];
         response_obj.push(name);
         response_obj.push(is_killer);
-        // response_obj[0]=name;
-        // response_obj[1]=is_killer;
         console.log("get player response object: " + response_obj[0] + response_obj[1]);
         res.end( JSON.stringify(response_obj));
       } );
@@ -152,6 +146,17 @@ function serveDynamic( req, res )
         res.writeHead( 404 );
         res.end( "Unknown URL: " + req.url );
     }
+}
+
+function selectRoomHelper(newX, newY, nameCookie, res)
+{
+  console.log(nameCookie);
+  var db = new sql.Database('players.sqlite');
+  db.all("UPDATE UsersPlaying SET xpos=" +
+  // newX + ", ypos=" + newY + " WHERE ip = '" + ipAddress + "'");
+  newX + ", ypos=" + newY + " WHERE playerName = '" + nameCookie + "'");
+  res.writeHead(200);
+  res.end("");
 }
 
 function addUser( req, res )
@@ -199,6 +204,19 @@ function redirect(res, playingBool, messageString)
   }
 }
 
+function changeTime()
+{
+  if (time > 0)
+  {
+    time = time - 500;
+  }
+  else {
+    time = 5000;
+  }
+  //console.log(time);
+  setTimeout(changeTime, 500)
+}
+
 function getFormValuesFromURL( url )
 {
     var kvs = {};
@@ -214,12 +232,13 @@ function getFormValuesFromURL( url )
     }
     return kvs
 }
+
 function clearPlayers()
 {
   var db = new sql.Database( 'players.sqlite' );
   db.run( "DELETE FROM UsersPlaying")
 }
-clearPlayers();
 
 var server = http.createServer( serverFun );
 server.listen( 8080 );
+clearPlayers();

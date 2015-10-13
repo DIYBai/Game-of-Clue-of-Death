@@ -17,7 +17,7 @@ function checkNewPlayerHelper( param, callback ) {
         } );
 }
 
-
+//edge case: constant selection (for updating client) can conflict with trying to update player position
 function getPlayersFromTable(callback)
 {
   var db = new sql.Database( 'players.sqlite' );
