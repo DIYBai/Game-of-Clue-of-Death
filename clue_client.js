@@ -1,12 +1,9 @@
-//
 var the_grid     = document.getElementById( 'grid' );
 var size = 5;
 var cell_select = null;
 var my_name;
 var my_player;
 var move_speed=1;
-// var myx = 0;
-// var myy = 0;
 
 function pageLoaded()
 {
@@ -36,29 +33,29 @@ function pageLoaded()
 function selectRoom( evt )
 {
     //if evt.target is within 1 block
-    var x_diff = evt.target.x-my_player.xpos;
-    var y_diff = evt.target.y-my_player.ypos;
+    var x_diff = evt.target.x - my_player.xpos;
+    var y_diff = evt.target.y - my_player.ypos;
     console.log(x_diff + " | " + y_diff);
-    if ((x_diff <= move_speed)
-     && (x_diff >= -move_speed)
-    && (y_diff <= move_speed)
-    && (y_diff >= -move_speed))
+    if ( (x_diff <=  move_speed) && (x_diff >= -move_speed) &&
+         (y_diff <=  move_speed) && (y_diff >= -move_speed) )
     {
       if (cell_select != null)
       {
-        console.log("cell before: "+ cell_select.id);
+        console.log("cell before: " + cell_select.id);
         cell_select.style.backgroundColor="transparent";
       }
       cell_select = evt.target;
       console.log("cell " + cell_select.id + " is selected");
-      {cell_select.style.backgroundColor = "red";}
+      cell_select.style.backgroundColor = "red";
       for( var i = 0; i < size; i++ )
       {
           for( var j = 0; j < size; j++ )
           {
-              var all_cell = document.getElementById( "x"+i+"y"+j );
+              var all_cell = document.getElementById( "x" + i + "y" + j );
               if (all_cell != cell_select)
-              {all_cell.style.backgroundColor = "transparent";}
+              {
+                all_cell.style.backgroundColor = "transparent";
+              }
           }
       }
       var xhr = new XMLHttpRequest();
@@ -92,7 +89,6 @@ function respondName( evt )
   var player = JSON.parse( xhr.responseText );
   my_name = player;
   console.log("my name: "+ my_name);
-  //body.appendChild();
 }
 
 function response( evt )
@@ -114,23 +110,12 @@ function response( evt )
             for(var k = 0; k < player_data.length; k++)
             {
               var player = player_data[k];
-              //console.log(player.xpos + " | " + player.ypos);
               if (player.xpos == i && player.ypos == j)
               {
                 cell_content += player.playerName;
               }
             }
             cell.innerHTML = cell_content;
-            //cell.style.backgroundColor = "transparent";
-            // if (cell_select)
-            // {
-            //   cell_select.style.backgroundColor="transparent";
-            // }
-            // else
-            // {
-            //   cell_select = null;
-            // }
-            //cell.addEventListener( 'onclick', selectRoom );
         }
     }
     //console.log("set timeout");
@@ -152,54 +137,3 @@ function findMe (players, name) //identifies which player is currently playing
     //else catch error?
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-// function onPageLoad()
-// {
-//     window.setTimeout( sendUpdateReq, 1000 );
-// }
-//
-// function sendUpdateReq()
-// {
-//     // alert( "SENDUPDATE" );
-//     var xhr = new XMLHttpRequest();
-//     xhr.addEventListener( "load", onResponse );
-//     xhr.open( "get", "get_number", true );
-//     xhr.send();
-// }
-//
-// function gogogo()
-// {
-//     var radios = document.getElementsByName( 'team' );
-//     var color = 'blue';
-//     for( var i = 0; i < radios.length; i++ )
-//     {
-//         if( radios[i].checked && ( radios[i].value === 'red' ) )
-//             color = 'red';
-//     }
-//
-//     // alert( color );
-//     var xhr = new XMLHttpRequest();
-//     xhr.addEventListener( "load", onResponse );
-//     xhr.open( "get", "gogogo?color="+color, true );
-//     xhr.send();
-// }
-//
-// function onResponse( evt )
-// {
-//     var xhr = evt.target;
-//     console.log( "Response text: ", xhr.responseText );
-//     var element = document.getElementById( 'the_number' );
-//     element.innerHTML = xhr.responseText;
-//     window.setTimeout( sendUpdateReq, 1000 );
-// }

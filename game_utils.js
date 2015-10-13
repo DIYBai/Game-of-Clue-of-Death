@@ -103,30 +103,6 @@ function initializePlayers(map)
   });
 }
 
-// function updatePlayerLocation(map, x, y, ipAddress)
-// {
-//   var db = new sql.Database( 'players.sqlite' );
-//   db.all("UPDATE UsersPlaying SET xpos=" + x
-//   + ", ypos=" + y + " WHERE ip=" + ipAddress);
-//   db.all("SELECT * FROM Users",
-//     function( err, rows ) {
-//       if (err != null)
-//       {
-//         console.log(err);
-//         return;
-//       }
-//       for( var i = 0; i < rows; i++ )
-//       {
-//         var x = rows[i].xpos;
-//         var y = rows[i].ypos
-//         map[x][y].player.push(rows[i].playerName);  //changed field name because 'name' may be reserved -DB
-//
-//         //maybe add a field to map[x][y] (AKA a cell) to indicate player and items
-//         //instead of JUST being represented by a string -DB
-//       }
-//   } );
-// }
-
 function getRandomInt(min, max)
 {
   return Math.floor(Math.random() * (max-min))+min;
@@ -136,7 +112,7 @@ function parseCookies( headers )
 {
     var cookies = {};
     var hc = headers.cookie;
-    console.log( 'cookies ', hc )
+    //console.log( 'cookies ', hc )
     hc && hc.split( ';' ).forEach(
         function( cookie )
         {
