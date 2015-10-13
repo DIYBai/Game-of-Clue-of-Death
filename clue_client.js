@@ -1,6 +1,8 @@
 var the_grid     = document.getElementById( 'grid' );
 var size = 5;
 var cell_select = null;
+//var my_player;
+//var move_speed=1;
 // var myx = 0;
 // var myy = 0;
 
@@ -13,7 +15,7 @@ function pageLoaded()
         {
             var cell_elem = document.createElement( 'td' );
             cell_elem.className="cell";
-            cell_elem.innerHTML="BLANK";
+            cell_elem.innerHTML="";
             cell_elem.width=80;
             cell_elem.height=80;
             cell_elem.x = i;
@@ -24,34 +26,38 @@ function pageLoaded()
         }
         the_grid.appendChild( row_elem );
         //console.log("the_grid: " + the_grid);
-    }
+        }
     window.setTimeout( pollServer, 100 );
 }
 
 function selectRoom( evt )
 {
-    //if evt.target is in the right place
-    if (cell_select != null)
-    {
-      console.log("cell before: "+ cell_select.id);
-      cell_select.style.backgroundColor="transparent";
-    }
-    cell_select = evt.target;
-    console.log("cell " + cell_select.id + " is selected");
-    {cell_select.style.backgroundColor = "red";}
-    // for( var i = 0; i < size; i++ )
+    //if evt.target is within 1 block
+    // if (evt.target.x >= my_player.xpos-move_speed && evt.target.x <= my_player.xpos+move_speed
+    // && evt.target.y >= my_player.ypos-move_speed && evt.target.y <= my_player.ypos+move_speed)
     // {
-    //     for( var j = 0; j < size; j++ )
-    //     {
-    //         var all_cell = document.getElementById( "x"+i+"y"+j );
-    //         if (all_cell != cell)
-    //         {all_cell.style.backgroundColor = "transparent";}
-    //     }
+      if (cell_select != null)
+      {
+        console.log("cell before: "+ cell_select.id);
+        cell_select.style.backgroundColor="transparent";
+      }
+      cell_select = evt.target;
+      console.log("cell " + cell_select.id + " is selected");
+      {cell_select.style.backgroundColor = "red";}
+      // for( var i = 0; i < size; i++ )
+      // {
+      //     for( var j = 0; j < size; j++ )
+      //     {
+      //         var all_cell = document.getElementById( "x"+i+"y"+j );
+      //         if (all_cell != cell)
+      //         {all_cell.style.backgroundColor = "transparent";}
+      //     }
+      // }
+      var xhr = new XMLHttpRequest();
+      var url = "select_room?i=" + cell_select.x + "&j=" + cell_select.y;
+      xhr.open( "get", url, true );
+      xhr.send();
     // }
-    var xhr = new XMLHttpRequest();
-    var url = "select_room?i=" + cell_select.x + "&j=" + cell_select.y;
-    xhr.open( "get", url, true );
-    xhr.send();
 }
 
 function pollServer()
@@ -70,6 +76,10 @@ function response( evt )
     //console.log( xhr.responseText );
     var player_data = JSON.parse( xhr.responseText );
     //console.log(player_data);
+    // if (my_player == null)
+    // {
+    //   my_player = findMe(player_data)
+    // }
     for( var i = 0; i < size; i++ )
     {
         for( var j = 0; j < size; j++ )
@@ -99,7 +109,18 @@ function response( evt )
     window.setTimeout( pollServer, 1000 );
 }
 
-
+// function findMe (players) //identifies which player is currently playing
+// {
+//   var myip= req.connection.remoteAddress;
+//   for (player in players)
+//   {
+//     if (player.ip=myip)
+//     {
+//       return player;
+//     }
+//     //else catch error?
+//   }
+// }
 
 
 
