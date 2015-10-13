@@ -1,3 +1,4 @@
+//
 var sql = require('sqlite3');
 
 function checkNewPlayerHelper( param, callback ) {

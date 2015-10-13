@@ -1,3 +1,4 @@
+//
 var the_grid     = document.getElementById( 'grid' );
 var size = 5;
 var cell_select = null;
