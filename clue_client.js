@@ -1,8 +1,9 @@
 var the_grid     = document.getElementById( 'grid' );
 var size = 5;
 var cell_select = null;
-//var my_player;
-//var move_speed=1;
+var my_name;
+var my_player;
+var move_speed=1;
 // var myx = 0;
 // var myy = 0;
 
@@ -27,15 +28,16 @@ function pageLoaded()
         the_grid.appendChild( row_elem );
         //console.log("the_grid: " + the_grid);
         }
+    pollForName();
     window.setTimeout( pollServer, 100 );
 }
 
 function selectRoom( evt )
 {
     //if evt.target is within 1 block
-    // if (evt.target.x >= my_player.xpos-move_speed && evt.target.x <= my_player.xpos+move_speed
-    // && evt.target.y >= my_player.ypos-move_speed && evt.target.y <= my_player.ypos+move_speed)
-    // {
+    if (evt.target.x >= my_player.xpos-move_speed && evt.target.x <= my_player.xpos+move_speed
+    && evt.target.y >= my_player.ypos-move_speed && evt.target.y <= my_player.ypos+move_speed)
+    {
       if (cell_select != null)
       {
         console.log("cell before: "+ cell_select.id);
@@ -44,20 +46,20 @@ function selectRoom( evt )
       cell_select = evt.target;
       console.log("cell " + cell_select.id + " is selected");
       {cell_select.style.backgroundColor = "red";}
-      // for( var i = 0; i < size; i++ )
-      // {
-      //     for( var j = 0; j < size; j++ )
-      //     {
-      //         var all_cell = document.getElementById( "x"+i+"y"+j );
-      //         if (all_cell != cell)
-      //         {all_cell.style.backgroundColor = "transparent";}
-      //     }
-      // }
+      for( var i = 0; i < size; i++ )
+      {
+          for( var j = 0; j < size; j++ )
+          {
+              var all_cell = document.getElementById( "x"+i+"y"+j );
+              if (all_cell != cell)
+              {all_cell.style.backgroundColor = "transparent";}
+          }
+      }
       var xhr = new XMLHttpRequest();
       var url = "select_room?i=" + cell_select.x + "&j=" + cell_select.y;
       xhr.open( "get", url, true );
       xhr.send();
-    // }
+    }
 }
 
 function pollServer()
@@ -69,17 +71,33 @@ function pollServer()
     xhr.send();
 }
 
+function pollForName()
+{
+    var xhr = new XMLHttpRequest();
+    console.log("polling for name");
+    xhr.open( "get", "get_player?", true );
+    xhr.addEventListener( "load", respondName );
+    xhr.send();
+}
+
+function respondName( evt )
+{
+  var xhr = evt.target;
+  var player = JSON.parse( xhr.responseText );
+  my_name = player;
+  console.log("my name: "+ my_name);
+  //body.appendChild();
+}
+
 function response( evt )
 {
     console.log("response called");
     var xhr = evt.target;
     //console.log( xhr.responseText );
     var player_data = JSON.parse( xhr.responseText );
-    //console.log(player_data);
-    // if (my_player == null)
-    // {
-    //   my_player = findMe(player_data)
-    // }
+    console.log(player_data);
+    my_player = findMe(player_data, my_name);
+    console.log("my player is: "+ my_player);
     for( var i = 0; i < size; i++ )
     {
         for( var j = 0; j < size; j++ )
@@ -113,18 +131,19 @@ function response( evt )
     window.setTimeout( pollServer, 1000 );
 }
 
-// function findMe (players) //identifies which player is currently playing
-// {
-//   var myip= req.connection.remoteAddress;
-//   for (player in players)
-//   {
-//     if (player.ip=myip)
-//     {
-//       return player;
-//     }
-//     //else catch error?
-//   }
-// }
+function findMe (players, name) //identifies which player is currently playing
+{
+  //var cookies= utils.parseCookies( req.headers );
+  console.log (players + " | " + name)
+  for (player in players)
+  {
+    if (player.playerName=name)
+    {
+      return player;
+    }
+    //else catch error?
+  }
+}
 
 
 
