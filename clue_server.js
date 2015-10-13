@@ -93,8 +93,8 @@ function serveDynamic( req, res )
     {
       res.writeHead(200);
       readyPlayers++;
-      //if(readyPlayers == players)
-      if(true) //temp testing
+      if(readyPlayers == players)
+      //if(true) //temp testing
       {
         playing = true;
         game.initializeGame();
@@ -169,8 +169,8 @@ function addUser( req, res )
 function redirect(res, playingBool, messageString)
 {
   console.log("redirect function playing bool:" + playingBool);
-  // if (playingBool === true)
-  if(true)  //temporary, for testing purposes
+  if (playingBool === true)
+  //if(true)  //temporary, for testing purposes
   {
     res.end("<html><body>" + messageString +
     "<script>" +
