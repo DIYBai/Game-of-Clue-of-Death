@@ -66,6 +66,12 @@ function selectRoom( evt )
     }
 }
 
+function killPlayer( evt )
+{
+  var victim = evt.target.victim
+  console.log (victim + "has been SLAIN")
+}
+
 function pollServer()
 {
     var xhr = new XMLHttpRequest();
@@ -93,12 +99,12 @@ function respondName( evt )
   console.log("my name: "+ my_name + " is me killer? "+ is_killer);
   if(is_killer)
   {
-    displayMessage("You are the murderer!!");
+    displayMessage("You are the MURDERER. Kill all other players to win.");
     window.setTimeout(displayMessage, 5000, "");
   }
   else
   {
-    displayMessage("You are NOT the murderer!!");
+    displayMessage("You are innocent. Discover the murderer and kill them. But beware, if you kill another innocent, you become a murderer yourself.");
     window.setTimeout(displayMessage, 5000, "");
   }
 }
@@ -116,8 +122,10 @@ function response( evt )
     var xhr = evt.target;
     //console.log( xhr.responseText );
     var player_data = JSON.parse( xhr.responseText );
+    var just_players = player_data.slice(0,player_data.length-1,1);
     //console.log(player_data);
     my_player = findMe(player_data, my_name);
+    drawButtons(just_players);
     //console.log("my player is: "+ my_player.playerName + " with xpos "+ my_player.xpos);
     for( var i = 0; i < size; i++ )
     {
@@ -154,5 +162,34 @@ function findMe (players, name) //identifies which player is currently playing
       return player;
     }
     //else catch error?
+  }
+}
+function drawButtons(victims)
+{
+  console.log("drawing buttons!");
+  var buttons  = document.getElementById( 'kill_buttons' );
+  while (buttons.hasChildNodes())
+  {
+    buttons.removeChild(buttons.firstChild);
+  }
+  for( var i = 0; i < victims.length; i++ )
+  {
+    var victim=victims[i];
+    if (victim.playerName != my_player.playerName)
+    {
+      var x_diff = victim.xpos - my_player.xpos;
+      var y_diff = victim.ypos - my_player.ypos;
+      //console.log(x_diff + " | " + y_diff);
+      if ( (x_diff <=  move_speed) && (x_diff >= -move_speed) &&
+           (y_diff <=  move_speed) && (y_diff >= -move_speed))
+      {
+        console.log("button "+victim.playerName);
+        var button = document.createElement( 'button' );
+        button.innerHTML="murder "+ victim.playerName +"?";
+        button.victim = victim.playerName;
+        button.addEventListener( 'click', killPlayer );
+        buttons.appendChild(button);
+      }
+    }
   }
 }
