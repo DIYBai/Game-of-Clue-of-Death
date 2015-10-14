@@ -165,6 +165,14 @@ function response( evt )
     {
         drawButtons(just_players);
     }
+    else
+    {
+      var buttons  = document.getElementById( 'kill_buttons' );
+      while (buttons.hasChildNodes())
+      {
+        buttons.removeChild(buttons.firstChild);
+      }
+    }
     //console.log("my player is: "+ my_player.playerName + " with xpos "+ my_player.xpos);
     for( var i = 0; i < size; i++ )
     {
@@ -223,10 +231,6 @@ function drawButtons(victims)
 {
   console.log("drawing buttons!");
   var buttons  = document.getElementById( 'kill_buttons' );
-  while (buttons.hasChildNodes())
-  {
-    buttons.removeChild(buttons.firstChild);
-  }
   for( var i = 0; i < victims.length; i++ )
   {
     var victim=victims[i];
