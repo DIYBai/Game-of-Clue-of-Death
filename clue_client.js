@@ -203,11 +203,12 @@ function response( evt )
                 {
                   if (player.dead)
                   {
-                    var corpse = document.createElement( 'div' );
-                    corpse.innerHTML = player.playerName;
-                    corpse.style.color=corpse_color;
-                    corpse.innerHTML="";
-                    cell.appendChild(corpse);
+                    //var corpse = document.createElement( 'span' );
+                    //corpse.innerHTML = player.playerName;
+                    //corpse.style.color=corpse_color;
+                  //  console.log("we should see the corpse of " + corpse.innerHTML);
+                    //cell.appendChild(corpse);
+                    cell_content += "<div style='color:olive'>" + player.playerName +"</div>";
                   }
                   else
                   {
