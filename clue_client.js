@@ -6,6 +6,7 @@ var is_killer;
 var my_player;
 var move_speed=1;
 var lit_color="indigo";
+var corpse_color="olive";
 var moves=0;
 
 function pageLoaded()
@@ -35,7 +36,7 @@ function pageLoaded()
 
 function selectRoom( evt )
 {
-  if (my_player.dead)
+  if (my_player && my_player.dead)
   {
     if (cell_select != null)
     {
@@ -177,7 +178,7 @@ function response( evt )
       return;
     }
     var just_players = player_data.slice(0,player_data.length-1,1);
-    //console.log(player_data);
+    console.log("just_players: "+just_players);
     var new_me = findMe(just_players, my_name);
     if (my_player && (new_me.xpos != my_player.xpos || new_me.ypos != my_player.ypos))
     {
@@ -219,7 +220,12 @@ function response( evt )
                   cell_content += " " +player.playerName;
                   if (player.dead)
                   {
-                    cell_content += "(dead)"; //placeholder, figure out how to change the color
+                    var corpse = document.createElement( div );
+                    corpse.innerHTML = player.playerName;
+                    corpse.style.color=corpse_color;
+                    cell_elem.innerHTML="";
+                    corpse.
+                    cell.appendChild(corpse)
                   }
                 }
               }
