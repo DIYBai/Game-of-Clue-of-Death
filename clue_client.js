@@ -6,6 +6,7 @@ var is_killer;
 var my_player;
 var move_speed=1;
 var lit_color="indigo";
+var moves=0;
 
 function pageLoaded()
 {
@@ -177,8 +178,13 @@ function response( evt )
     }
     var just_players = player_data.slice(0,player_data.length-1,1);
     //console.log(player_data);
-    my_player = findMe(player_data, my_name);
-    if (!my_player.dead)
+    var new_me = findMe(player_data, my_name);
+    if (new_me.xpos != my_player.xpos || new_me.ypos != my_player.ypos)
+    {
+      moves++;
+    }
+    my_player = new_me;
+    if (!my_player.dead && moves>2)
     {
         drawButtons(just_players);
     }
