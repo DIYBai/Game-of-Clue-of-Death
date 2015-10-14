@@ -116,7 +116,7 @@ function serveDynamic( req, res )
     }
     else if( req.url.indexOf( "get_update?" ) >= 0 )
     {
-      if(winCondition != -1)
+      if(winCondition == -1)
       {
         game.getPlayersFromTable( function( playerArray )
           {
@@ -149,13 +149,8 @@ function serveDynamic( req, res )
     }
     else if ( req.url.indexOf( "get_player?" ) >= 0 )
     {
-      var name = "";
-      var namePieces = req.headers.cookie.substring(11).split('+');
-      for(var i = 0; i < namePieces.length-1; i++)
-      {
-        name += namePieces[i] + " ";
-      }
-      name += namePieces[namePieces.length-1];
+      var name = req.headers.cookie.substring(11);
+
       res.writeHead(200);
       game.getKiller(name, function(is_killer){
         var response_obj = [];
@@ -169,24 +164,10 @@ function serveDynamic( req, res )
     else if (req.url.indexOf( "get_murder?" ) >= 0 )
     {
       var killer = (kvs.killer);
-      var nameKiller = "";
-      var namePieces = killer.split('%20');
-      for(var i = 0; i < namePieces.length-1; i++)
-      {
-        nameKiller += namePieces[i] + " ";
-      }
-      nameKiller += namePieces[namePieces.length-1];
-
       var killed = (kvs.killed);
-      var nameKilled = "";
-      var namePieces = killed.split('%20');
-      for(var i = 0; i < namePieces.length-1; i++)
-      {
-        nameKilled += namePieces[i] + " ";
-      }
-      nameKilled += namePieces[namePieces.length-1];
-      console.log(nameKiller + " has murdered " + nameKilled);
-      game.kill(nameKiller, nameKilled, function(winState)
+
+      console.log(killer + " has murdered " + killed);
+      game.kill(killer, killed, function(winState)
       {
         winCondition = winState;
       });
@@ -201,13 +182,7 @@ function serveDynamic( req, res )
 function selectRoomHelper(newX, newY, nameCookie, res)
 {
   //console.log(nameCookie);
-  var name = "";
-  var namePieces = nameCookie.split('+');
-  for(var i = 0; i < namePieces.length-1; i++)
-  {
-    name += namePieces[i] + " ";
-  }
-  name += namePieces[namePieces.length-1];
+  var name = nameCookie;
   db.all("UPDATE UsersPlaying SET xpos=" +
   // newX + ", ypos=" + newY + " WHERE ip = '" + ipAddress + "'");
   newX + ", ypos=" + newY + " WHERE playerName = '" + name + "'");
@@ -218,13 +193,7 @@ function selectRoomHelper(newX, newY, nameCookie, res)
 function addUser( req, res, callback )
 {
     var kvs = getFormValuesFromURL( req.url );
-    var name = "";
-    var namePieces = kvs[ 'name_input' ].split('+');
-    for(var i = 0; i < namePieces.length-1; i++)
-    {
-      name += namePieces[i] + " ";
-    }
-    name += namePieces[namePieces.length-1];
+    var name = kvs[ 'name_input' ];
     var ipAddress = req.connection.remoteAddress;
     //console.log("In add user fxn");
     db.run( "INSERT INTO UsersPlaying(ip, playerName) VALUES ( ?, ? ) ", ipAddress, name,

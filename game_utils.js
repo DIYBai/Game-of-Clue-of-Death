@@ -140,21 +140,6 @@ function getKiller( name, callback)
 
 function kill(killer, killed, callback)
 {
-  var nameKiller = "";
-  var namePieces = killer.split('+');
-  for(var i = 0; i < namePieces.length-1; i++)
-  {
-    nameKiller += namePieces[i] + " ";
-  }
-  nameKiller += namePieces[namePieces.length-1];
-
-  var nameKilled = "";
-  var namePieces = killed.split('+');
-  for(var i = 0; i < namePieces.length-1; i++)
-  {
-    nameKilled += namePieces[i] + " ";
-  }
-  nameKilled += namePieces[namePieces.length-1];
   db.all("UPDATE UsersPlaying SET deadBool='true' WHERE playerName='" + killed + "'");
   db.all("SELECT murdererBool FROM UsersPlaying WHERE playerName='" + killed + "' OR playerName='" + killer + "'",
   function(err, rows)
@@ -181,16 +166,17 @@ function kill(killer, killed, callback)
       {
         killers++;
       }
-      else {
+      else
+      {
         innocents++;
       }
     }
-    console.log("killers and innocents: "+ killers+ " "+innocents);
+    //console.log("killers and innocents: " + killers + " " + innocents);
     var messageString = "";
     var winCondition = -1;
     if (killers == 0 )
     {
-      if (innocents==0)
+      if (innocents == 0)
       {
         messageString = "EVERYONE IS DEAD! EVERYONE LOSES!";
         console.log(messageString);
@@ -217,10 +203,8 @@ exports.kill=kill;
 exports.getKiller = getKiller;
 exports.checkNewPlayerHelper = checkNewPlayerHelper;
 exports.getPlayersFromTable = getPlayersFromTable;
-//exports.addUser = addUser;
 exports.initializeGame = initializeGame;
 exports.generateMap = generateMap;
 exports.initializePlayers = initializePlayers;
-//exports.updatePlayerLocation = updatePlayerLocation;
 exports.getRandomInt = getRandomInt;
 exports.parseCookies = parseCookies;
