@@ -141,6 +141,13 @@ function serveDynamic( req, res )
       } );
 
     }
+    else if (req.url.indexOf( "get_murder?" ) >= 0 )
+    {
+      var killer = (kvs.killer);
+      var killed = (kvs.killed);
+      console.log(killer + " has murdered "+killed);
+      game.kill(killer,killed);
+    }
     else
     {
         res.writeHead( 404 );

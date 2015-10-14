@@ -36,6 +36,7 @@ function getPlayersFromTable(callback)
                   item.xpos = rows[i].xpos;
                   item.ypos = rows[i].ypos;
                   item.playerName = rows[i].playerName;
+                  item.dead = rows[i].deadBool;
                   returnArray.push(item);
                 }
                 callback(returnArray);
@@ -140,6 +141,61 @@ function getKiller( name, callback)
             }
         );
 }
+
+function kill(killer, killed)
+{
+  var db = new sql.Database( 'players.sqlite' );
+  db.all("UPDATE UsersPlaying SET deadBool='true' WHERE playerName='" + killed + "'");
+  db.all("SELECT murdererBool FROM UsersPlaying WHERE playerName='" + killed + "'; playerName='" + killer + "'",
+  function(err, rows)
+  {
+    if (rows[0].murdererBool != "true" && rows[1].murdererBool != "true")
+    {
+      console.log("OOOPS! You killed an innocent. That makes you a murderer, huh. Guess you'd better get killing.");
+      db.run("UPDATE UsersPlaying SET murdererBool='true' WHERE playerName='" + killer + "'");
+    }
+  } );
+  db.all("SELECT deadBool, murdererBool FROM UsersPlaying WHERE deadBool IS NOT 'true'",
+  function(err, rows)
+  {
+    if(err)
+    {
+      console.log(err);
+      return;
+    }
+    var killers = 0;
+    var innocents = 0;
+    for (i=0; i<rows.length; i++)
+    {
+      if (rows[i].murdererBool="true")
+      {
+        killers++;
+      }
+      else {
+        innocents++;
+      }
+    }
+    console.log("killers and innocents: "+ killers+ " "+innocents);
+    if (killers == 0 )
+    {
+      if (innocents==0)
+      {
+        console.log("EVERYONE IS DEAD! EVERYONE LOSES!");
+      }
+      else
+      {
+        console.log("THE MURDERER IS DEAD! THE INNOCENTS WIN!");
+      }
+    }
+    else if (innocents = 0 && killers == 1)
+    {
+      console.log("THE INNOCENTS ARE DEAD! THE MURDERER WINS!");
+    }
+
+  } );
+}
+
+exports.kill=kill;
 exports.getKiller = getKiller;
 exports.checkNewPlayerHelper = checkNewPlayerHelper;
 exports.getPlayersFromTable = getPlayersFromTable;

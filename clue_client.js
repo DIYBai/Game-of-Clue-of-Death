@@ -5,6 +5,7 @@ var my_name;
 var is_killer;
 var my_player;
 var move_speed=1;
+var lit_color="indigo";
 
 function pageLoaded()
 {
@@ -33,17 +34,28 @@ function pageLoaded()
 
 function selectRoom( evt )
 {
+  if (my_player.dead)
+  {
+    if (cell_select != null)
+    {
+      cell_select.style.backgroundColor="transparent";
+    }
+    console.log("you can't move because you're dead.")
+    displayMessage("you have been MURDERED")
+    return;
+  }
     //if evt.target is within 1 block
     var x_diff = evt.target.x - my_player.xpos;
     var y_diff = evt.target.y - my_player.ypos;
     console.log(x_diff + " | " + y_diff);
     if ( (x_diff <=  move_speed) && (x_diff >= -move_speed) &&
-         (y_diff <=  move_speed) && (y_diff >= -move_speed) )
+         (y_diff <=  move_speed) && (y_diff >= -move_speed)
+       && (x_diff == 0 || y_diff==0))
     {
       if (cell_select != null)
       {
         console.log("cell before: " + cell_select.id);
-        cell_select.style.backgroundColor="transparent";
+        cell_select.style.backgroundColor=lit_color;
       }
       cell_select = evt.target;
       console.log("cell " + cell_select.id + " is selected");
@@ -55,7 +67,7 @@ function selectRoom( evt )
               var all_cell = document.getElementById( "x" + i + "y" + j );
               if (all_cell != cell_select)
               {
-                all_cell.style.backgroundColor = "transparent";
+                //all_cell.style.backgroundColor = "transparent";
               }
           }
       }
@@ -69,7 +81,23 @@ function selectRoom( evt )
 function killPlayer( evt )
 {
   var victim = evt.target.victim
-  console.log (victim + "has been SLAIN")
+  var buttons  = document.getElementById( 'kill_buttons' );
+  if(!is_killer)
+  {
+    while (buttons.hasChildNodes())
+    {
+      buttons.removeChild(buttons.firstChild);
+    }
+  }
+  else {
+    buttons.removeChild(evt.target);
+  }
+  console.log (victim + "has been SLAIN");
+  var xhr = new XMLHttpRequest();
+  var url = "get_murder?killer=" + my_player.playerName+ "&killed=" + victim;
+  xhr.open( "get", url, true );
+  xhr.addEventListener( "load", respondMurder );
+  xhr.send();
 }
 
 function pollServer()
@@ -109,6 +137,14 @@ function respondName( evt )
   }
 }
 
+function respondMurder( evt )
+{
+  var xhr = evt.target;
+  var reponse = JSON.parse( xhr.responseText );
+  displayMessage(response +" has DIED");
+  window.setTimeout(displayMessage, 5000, "");
+}
+
 function displayMessage(messageString)
 {
   var msg = document.getElementById("message");
@@ -125,7 +161,10 @@ function response( evt )
     var just_players = player_data.slice(0,player_data.length-1,1);
     //console.log(player_data);
     my_player = findMe(player_data, my_name);
-    drawButtons(just_players);
+    if (!my_player.dead)
+    {
+        drawButtons(just_players);
+    }
     //console.log("my player is: "+ my_player.playerName + " with xpos "+ my_player.xpos);
     for( var i = 0; i < size; i++ )
     {
@@ -136,10 +175,26 @@ function response( evt )
             //for (var player in player_data)
             for(var k = 0; k < player_data.length-1; k++)
             {
-              var player = player_data[k];
-              if (player.xpos == i && player.ypos == j)
+              if (i==my_player.xpos || j==my_player.ypos ||my_player.dead)
               {
-                cell_content += player.playerName;
+                if (cell.style.backgroundColor!="red")
+                {
+                  cell.style.backgroundColor=lit_color;
+                }
+                cell.style.borderColor="red";
+                var player = player_data[k];
+                if (player.xpos == i && player.ypos == j)
+                {
+                  cell_content += " " +player.playerName;
+                  if (player.dead)
+                  {
+                    cell_content += "(dead)"; //placeholder, figure out how to change the color
+                  }
+                }
+              }
+              else {
+                cell.style.backgroundColor="transparent";
+                cell.style.borderColor="transparent";
               }
             }
             cell.innerHTML = cell_content;
@@ -181,7 +236,8 @@ function drawButtons(victims)
       var y_diff = victim.ypos - my_player.ypos;
       //console.log(x_diff + " | " + y_diff);
       if ( (x_diff <=  move_speed) && (x_diff >= -move_speed) &&
-           (y_diff <=  move_speed) && (y_diff >= -move_speed))
+           (y_diff <=  move_speed) && (y_diff >= -move_speed)
+         && (x_diff == 0 || y_diff==0))
       {
         console.log("button "+victim.playerName);
         var button = document.createElement( 'button' );
