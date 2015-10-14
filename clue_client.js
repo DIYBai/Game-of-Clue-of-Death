@@ -231,6 +231,10 @@ function drawButtons(victims)
 {
   console.log("drawing buttons!");
   var buttons  = document.getElementById( 'kill_buttons' );
+  while (buttons.hasChildNodes())
+  {
+    buttons.removeChild(buttons.firstChild);
+  }
   for( var i = 0; i < victims.length; i++ )
   {
     var victim=victims[i];
