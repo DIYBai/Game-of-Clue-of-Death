@@ -6,7 +6,6 @@ var is_killer;
 var my_player;
 var move_speed=1;
 var lit_color="indigo";
-var corpse_color="olive";
 var moves=0;
 
 function pageLoaded()
