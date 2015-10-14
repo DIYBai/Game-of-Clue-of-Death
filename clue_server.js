@@ -53,18 +53,26 @@ function serverFun( req, res )
     {
         if(req.url.indexOf("add_player") >= 0)
         {
-          addUser(req,res);
-          var kvs=getFormValuesFromURL(req.url);
-          session_id = ''+kvs.name_input;
-          res.setHeader( "Set-Cookie",
-                         [ 'session_id='+session_id] );
-          if(playing)
-          {
-            req.url = "/play.html";
-          }
-          else {
-            req.url = "/ready.html"
-          }
+          addUser(req,res, function(successful){
+            if(successful)
+            {
+              var kvs=getFormValuesFromURL(req.url);
+              session_id = ''+kvs.name_input;
+              res.setHeader( "Set-Cookie",
+                             [ 'session_id='+session_id] );
+              if(playing)
+              {
+                req.url = "/play.html";
+              }
+              else {
+                req.url = "/ready.html"
+              }
+            }
+            else {
+              req.url = "/newPlayer.html"
+            }
+          });
+
         }
 
         var file_worked = serveFile(req, res);
@@ -141,7 +149,14 @@ function serveDynamic( req, res )
     }
     else if ( req.url.indexOf( "get_player?" ) >= 0 )
     {
-      var name = req.headers.cookie.substring(11);
+      //var name = req.headers.cookie.substring(11);
+      var name = "";
+      var namePieces = req.headers.cookie.substring(11).split('+');
+      for(var i = 0; i < namePieces.length-1; i++)
+      {
+        name += namePieces[i] + " ";
+      }
+      name += namePieces[namePieces.length-1];
       res.writeHead(200);
       game.getKiller(name, function(is_killer){
         var response_obj = [];
@@ -173,10 +188,17 @@ function serveDynamic( req, res )
 
 function selectRoomHelper(newX, newY, nameCookie, res)
 {
-  console.log(nameCookie);
+  //console.log(nameCookie);
+  var name = "";
+  var namePieces = nameCookie.split('+');
+  for(var i = 0; i < namePieces.length-1; i++)
+  {
+    name += namePieces[i] + " ";
+  }
+  name += namePieces[namePieces.length-1];
   db.all("UPDATE UsersPlaying SET xpos=" +
   // newX + ", ypos=" + newY + " WHERE ip = '" + ipAddress + "'");
-  newX + ", ypos=" + newY + " WHERE playerName = '" + nameCookie + "'");
+  newX + ", ypos=" + newY + " WHERE playerName = '" + name + "'");
   res.writeHead(200);
   res.end("");
 }
@@ -184,24 +206,30 @@ function selectRoomHelper(newX, newY, nameCookie, res)
 function addUser( req, res )
 {
     var kvs = getFormValuesFromURL( req.url );
-    var name = kvs[ 'name_input' ];
+    var name = "";
+    var namePieces = kvs[ 'name_input' ].split('+');
+    for(var i = 0; i < namePieces.length-1; i++)
+    {
+      name += namePieces[i] + " ";
+    }
+    name += namePieces[namePieces.length-1];
     var ipAddress = req.connection.remoteAddress;
     //console.log("In add user fxn");
     db.run( "INSERT INTO UsersPlaying(ip, playerName) VALUES ( ?, ? ) ", ipAddress, name,
               function (err)
               {
-                  console.log("In DB insert query");
                   if(err)
                   {
                     console.log(err);
                   }
+                  else {
+                    players++;
+                  }
               } );
-    players++;
 }
 
 function redirect(res, playingBool, messageString)
 {
-  console.log("redirect function playing bool:" + playingBool);
   if (playingBool === true)
   //if(true)  //temporary, for testing purposes
   {
@@ -260,5 +288,5 @@ function clearPlayers()
 }
 
 var server = http.createServer( serverFun );
-server.listen( 8080 );
+server.listen( 4444 );
 clearPlayers();

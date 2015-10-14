@@ -140,6 +140,21 @@ function getKiller( name, callback)
 
 function kill(killer, killed, callback)
 {
+  var nameKiller = "";
+  var namePieces = killer.split('+');
+  for(var i = 0; i < namePieces.length-1; i++)
+  {
+    nameKiller += namePieces[i] + " ";
+  }
+  nameKiller += namePieces[namePieces.length-1];
+
+  var nameKilled = "";
+  var namePieces = killed.split('+');
+  for(var i = 0; i < namePieces.length-1; i++)
+  {
+    nameKilled += namePieces[i] + " ";
+  }
+  nameKilled += namePieces[namePieces.length-1];
   db.all("UPDATE UsersPlaying SET deadBool='true' WHERE playerName='" + killed + "'");
   db.all("SELECT murdererBool FROM UsersPlaying WHERE playerName='" + killed + "' OR playerName='" + killer + "'",
   function(err, rows)
