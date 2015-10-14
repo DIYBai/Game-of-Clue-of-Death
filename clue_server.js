@@ -10,6 +10,7 @@ var players = 0;
 var readyPlayers = 0;
 var gameMap;
 var time = 5000;
+var winCondition = -1;
 
 function serverFun( req, res )
 {
@@ -34,12 +35,17 @@ function serverFun( req, res )
         if(req.url.indexOf("add_player") >= 0)
         {
           addUser(req,res, function(successful){
+            console.log("success:" + successful);
             if(successful)
             {
               var kvs=getFormValuesFromURL(req.url);
               session_id = ''+kvs.name_input;
-              res.setHeader( "Set-Cookie",
+              try
+              {
+                res.setHeader( "Set-Cookie",
                              [ 'session_id='+session_id] );
+              }
+              catch(exp) {};
               if(playing)
               {
                 req.url = "/play.html";
@@ -51,12 +57,15 @@ function serverFun( req, res )
             else {
               req.url = "/newPlayer.html"
             }
+            var file_worked = serveFile(req, res);
           });
         }
-        var file_worked = serveFile(req, res);
-        if (!file_worked)
-        {
-          serveDynamic( req, res );
+        else {
+          var file_worked = serveFile(req, res);
+          if (!file_worked)
+          {
+            serveDynamic( req, res );
+          }
         }
     }
 }
@@ -93,9 +102,8 @@ function serveDynamic( req, res )
     }
     else if (req.url.indexOf("waiting") >= 0 )
     {
-      console.log("Waiting");
       res.writeHead(200);
-      var message = "readyPlayers: " + readyPlayers + "\nplayers: " + players;
+      var message = "Players: " + players + "\nPlayers left to join: " + (players - readyPlayers);
       redirect(res, playing, message);
     }
     else if( req.url.indexOf( "select_room?" ) >= 0 )
@@ -108,17 +116,39 @@ function serveDynamic( req, res )
     }
     else if( req.url.indexOf( "get_update?" ) >= 0 )
     {
-      game.getPlayersFromTable( function( playerArray )
+      if(winCondition != -1)
+      {
+        game.getPlayersFromTable( function( playerArray )
           {
             response_obj = playerArray;
             response_obj.push(time);
             res.writeHead( 200 );
             res.end( JSON.stringify( response_obj ) );
           });
+      }
+      else
+      {
+        var response_obj = [];
+        var returnString = "";
+        if(winCondition = 0)
+        {
+          returnString = "EVERYONE IS DEAD! EVERYONE LOSES!";
+        }
+        if(winCondition = 1)
+        {
+          returnString = "THE MURDERER IS DEAD! THE INNOCENTS WIN!";
+        }
+        if(winCondition = 2)
+        {
+          returnString = "THE INNOCENTS ARE DEAD! THE MURDERER WINS!";
+        }
+        response_obj.push(returnString);
+        res.writeHead(200);
+        res.end(JSON.stringify(response_obj));
+      }
     }
     else if ( req.url.indexOf( "get_player?" ) >= 0 )
     {
-      //var name = req.headers.cookie.substring(11);
       var name = "";
       var namePieces = req.headers.cookie.substring(11).split('+');
       for(var i = 0; i < namePieces.length-1; i++)
@@ -139,9 +169,27 @@ function serveDynamic( req, res )
     else if (req.url.indexOf( "get_murder?" ) >= 0 )
     {
       var killer = (kvs.killer);
+      var nameKiller = "";
+      var namePieces = killer.split('%20');
+      for(var i = 0; i < namePieces.length-1; i++)
+      {
+        nameKiller += namePieces[i] + " ";
+      }
+      nameKiller += namePieces[namePieces.length-1];
+
       var killed = (kvs.killed);
-      console.log(killer + " has murdered "+killed);
-      game.kill(killer,killed);
+      var nameKilled = "";
+      var namePieces = killed.split('%20');
+      for(var i = 0; i < namePieces.length-1; i++)
+      {
+        nameKilled += namePieces[i] + " ";
+      }
+      nameKilled += namePieces[namePieces.length-1];
+      console.log(nameKiller + " has murdered " + nameKilled);
+      game.kill(nameKiller, nameKilled, function(winState)
+      {
+        winCondition = winState;
+      });
     }
     else
     {
@@ -167,7 +215,7 @@ function selectRoomHelper(newX, newY, nameCookie, res)
   res.end("");
 }
 
-function addUser( req, res )
+function addUser( req, res, callback )
 {
     var kvs = getFormValuesFromURL( req.url );
     var name = "";
@@ -185,9 +233,12 @@ function addUser( req, res )
                   if(err)
                   {
                     console.log(err);
+                    callback(false);
                   }
                   else {
+                    console.log("successfully added player");
                     players++;
+                    callback(true);
                   }
               } );
 }

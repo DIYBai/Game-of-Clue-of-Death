@@ -209,7 +209,7 @@ function kill(killer, killed, callback)
       console.log(messageString);
       winCondition = 2;
     }
-    callback(winCondition, messageString);
+    callback(winCondition);
   } );
 }
 
