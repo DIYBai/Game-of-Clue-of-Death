@@ -4,11 +4,13 @@ var sql = require( 'sqlite3');
 var game = require( './game_utils.js');
 //var utils = require( './url_utils.js' );
 
+var db = new sql.Database('players.sqlite');
 var playing = false;
 var players = 0;
 var readyPlayers = 0;
 var gameMap;
 var time = 5000;
+var winCondition = -1; //-1 means no win, 0 = everyonelost 1 = innocents win 2 = murderer won
 
 function serverFun( req, res )
 {
@@ -120,13 +122,22 @@ function serveDynamic( req, res )
     }
     else if( req.url.indexOf( "get_update?" ) >= 0 )
     {
-      game.getPlayersFromTable( function( playerArray )
-          {
-            response_obj = playerArray;
-            response_obj.push(time);
-            res.writeHead( 200 );
-            res.end( JSON.stringify( response_obj ) );
-          });
+      if(winCondition == -1)
+      {
+        game.getPlayersFromTable( function( playerArray )
+            {
+              response_obj = playerArray;
+              response_obj.push(time);
+              res.writeHead( 200 );
+              res.end( JSON.stringify( response_obj ) );
+            });
+      }
+      else {
+        res.writeHead(200);
+        var response_obj = [];
+        response_obj.push(winCondition);//somehow access win string
+        res.end( JSON.stringify(response_obj) );
+      }
     }
     else if ( req.url.indexOf( "get_player?" ) >= 0 )
     {
@@ -146,7 +157,12 @@ function serveDynamic( req, res )
       var killer = (kvs.killer);
       var killed = (kvs.killed);
       console.log(killer + " has murdered "+killed);
-      game.kill(killer,killed);
+      game.kill(killer,killed, function(number, string) {
+        winCondition = number;
+        winCondition.message = string; //this won't work
+        res.writeHead(200);
+        res.end();
+      });
     }
     else
     {
@@ -158,7 +174,6 @@ function serveDynamic( req, res )
 function selectRoomHelper(newX, newY, nameCookie, res)
 {
   console.log(nameCookie);
-  var db = new sql.Database('players.sqlite');
   db.all("UPDATE UsersPlaying SET xpos=" +
   // newX + ", ypos=" + newY + " WHERE ip = '" + ipAddress + "'");
   newX + ", ypos=" + newY + " WHERE playerName = '" + nameCookie + "'");
@@ -169,7 +184,6 @@ function selectRoomHelper(newX, newY, nameCookie, res)
 function addUser( req, res )
 {
     var kvs = getFormValuesFromURL( req.url );
-    var db = new sql.Database( 'players.sqlite' );
     var name = kvs[ 'name_input' ];
     var ipAddress = req.connection.remoteAddress;
     //console.log("In add user fxn");
@@ -242,7 +256,6 @@ function getFormValuesFromURL( url )
 
 function clearPlayers()
 {
-  var db = new sql.Database( 'players.sqlite' );
   db.run( "DELETE FROM UsersPlaying")
 }
 

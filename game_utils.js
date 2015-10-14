@@ -1,8 +1,7 @@
-//
 var sql = require('sqlite3');
+var db = new sql.Database('players.sqlite');
 
 function checkNewPlayerHelper( param, callback ) {
-    var db = new sql.Database('players.sqlite');
     db.all( 'SELECT ip FROM Users', function( err, rows )
         {
             for(var i = 0; i < rows.length; i++)
@@ -20,7 +19,6 @@ function checkNewPlayerHelper( param, callback ) {
 //edge case: constant selection (for updating client) can conflict with trying to update player position
 function getPlayersFromTable(callback)
 {
-  var db = new sql.Database( 'players.sqlite' );
   var returnArray = [];
   db.all( "SELECT * FROM UsersPlaying",
             function (err, rows)
@@ -94,7 +92,6 @@ function generateMap(size)
 function initializePlayers(map)
 {
   var center = Math.floor(map.length/2);
-  var db = new sql.Database( 'players.sqlite' );
   db.all("UPDATE UsersPlaying SET xpos=" + center + ", ypos=" + center);
   //how to update random row?
   //db.all("UPDATE UsersPlaying ORDER BY RANDOM() LIMIT 1 SET murdererBool='true'");
@@ -126,7 +123,6 @@ function parseCookies( headers )
 }
 function getKiller( name, callback)
 {
-  var db = new sql.Database( 'players.sqlite' );
   db.all( "SELECT murdererBool FROM UsersPlaying WHERE playerName='" +name + "'",
             function (err, rows)
             {
@@ -142,9 +138,8 @@ function getKiller( name, callback)
         );
 }
 
-function kill(killer, killed)
+function kill(killer, killed, callback)
 {
-  var db = new sql.Database( 'players.sqlite' );
   db.all("UPDATE UsersPlaying SET deadBool='true' WHERE playerName='" + killed + "'");
   db.all("SELECT murdererBool FROM UsersPlaying WHERE playerName='" + killed + "' OR playerName='" + killer + "'",
   function(err, rows)
@@ -176,22 +171,30 @@ function kill(killer, killed)
       }
     }
     console.log("killers and innocents: "+ killers+ " "+innocents);
+    var messageString = "";
+    var winCondition = -1;
     if (killers == 0 )
     {
       if (innocents==0)
       {
-        console.log("EVERYONE IS DEAD! EVERYONE LOSES!");
+        messageString = "EVERYONE IS DEAD! EVERYONE LOSES!";
+        console.log(messageString);
+        winCondition = 0;
       }
       else
       {
-        console.log("THE MURDERER IS DEAD! THE INNOCENTS WIN!");
+        messageString = "THE MURDERER IS DEAD! THE INNOCENTS WIN!";
+        console.log(messageString);
+        winCondition = 1;
       }
     }
     else if (innocents == 0 && killers == 1)
     {
-      console.log("THE INNOCENTS ARE DEAD! THE MURDERER WINS!");
+      messageString = "THE INNOCENTS ARE DEAD! THE MURDERER WINS!"
+      console.log(messageString);
+      winCondition = 2;
     }
-
+    callback(winCondition, messageString);
   } );
 }
 
