@@ -2,15 +2,14 @@ var fs   = require( 'fs' );
 var http = require( 'http' );
 var sql = require( 'sqlite3');
 var game = require( './game_utils.js');
+var db = new sql.Database('players.sqlite');
 //var utils = require( './url_utils.js' );
 
-var db = new sql.Database('players.sqlite');
 var playing = false;
 var players = 0;
 var readyPlayers = 0;
 var gameMap;
 var time = 5000;
-var winCondition = -1; //-1 means no win, 0 = everyonelost 1 = innocents win 2 = murderer won
 
 function serverFun( req, res )
 {
@@ -130,22 +129,13 @@ function serveDynamic( req, res )
     }
     else if( req.url.indexOf( "get_update?" ) >= 0 )
     {
-      if(winCondition == -1)
-      {
-        game.getPlayersFromTable( function( playerArray )
-            {
-              response_obj = playerArray;
-              response_obj.push(time);
-              res.writeHead( 200 );
-              res.end( JSON.stringify( response_obj ) );
-            });
-      }
-      else {
-        res.writeHead(200);
-        var response_obj = [];
-        response_obj.push(winCondition);//somehow access win string
-        res.end( JSON.stringify(response_obj) );
-      }
+      game.getPlayersFromTable( function( playerArray )
+          {
+            response_obj = playerArray;
+            response_obj.push(time);
+            res.writeHead( 200 );
+            res.end( JSON.stringify( response_obj ) );
+          });
     }
     else if ( req.url.indexOf( "get_player?" ) >= 0 )
     {
@@ -172,12 +162,7 @@ function serveDynamic( req, res )
       var killer = (kvs.killer);
       var killed = (kvs.killed);
       console.log(killer + " has murdered "+killed);
-      game.kill(killer,killed, function(number, string) {
-        winCondition = number;
-        winCondition.message = string; //this won't work
-        res.writeHead(200);
-        res.end();
-      });
+      game.kill(killer,killed);
     }
     else
     {
