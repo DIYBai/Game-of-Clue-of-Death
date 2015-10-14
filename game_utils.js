@@ -149,6 +149,7 @@ function kill(killer, killed)
   db.all("SELECT murdererBool FROM UsersPlaying WHERE playerName='" + killed + "'; playerName='" + killer + "'",
   function(err, rows)
   {
+    console.log(rows.length);
     if (rows[0].murdererBool != "true" && rows[1].murdererBool != "true")
     {
       console.log("OOOPS! You killed an innocent. That makes you a murderer, huh. Guess you'd better get killing.");
