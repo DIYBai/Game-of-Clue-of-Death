@@ -146,10 +146,9 @@ function kill(killer, killed)
 {
   var db = new sql.Database( 'players.sqlite' );
   db.all("UPDATE UsersPlaying SET deadBool='true' WHERE playerName='" + killed + "'");
-  db.all("SELECT murdererBool FROM UsersPlaying WHERE playerName='" + killed + "'; playerName='" + killer + "'",
+  db.all("SELECT murdererBool FROM UsersPlaying WHERE playerName='" + killed + "' OR playerName='" + killer + "'",
   function(err, rows)
   {
-    console.log(rows.length);
     if (rows[0].murdererBool != "true" && rows[1].murdererBool != "true")
     {
       console.log("OOOPS! You killed an innocent. That makes you a murderer, huh. Guess you'd better get killing.");
@@ -168,7 +167,7 @@ function kill(killer, killed)
     var innocents = 0;
     for (i=0; i<rows.length; i++)
     {
-      if (rows[i].murdererBool="true")
+      if (rows[i].murdererBool=="true")
       {
         killers++;
       }
@@ -188,7 +187,7 @@ function kill(killer, killed)
         console.log("THE MURDERER IS DEAD! THE INNOCENTS WIN!");
       }
     }
-    else if (innocents = 0 && killers == 1)
+    else if (innocents == 0 && killers == 1)
     {
       console.log("THE INNOCENTS ARE DEAD! THE MURDERER WINS!");
     }
