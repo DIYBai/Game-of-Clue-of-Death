@@ -203,7 +203,7 @@ function response( evt )
                 {
                   if (player.dead)
                   {
-                    var corpse = document.createElement( div );
+                    var corpse = document.createElement( 'div' );
                     corpse.innerHTML = player.playerName;
                     corpse.style.color=corpse_color;
                     corpse.innerHTML="";

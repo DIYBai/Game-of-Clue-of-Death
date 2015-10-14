@@ -116,36 +116,30 @@ function serveDynamic( req, res )
     }
     else if( req.url.indexOf( "get_update?" ) >= 0 )
     {
-      if(winCondition == -1)
-      {
-        game.getPlayersFromTable( function( playerArray )
+      game.getPlayersFromTable( function( playerArray )
+        {
+          response_obj = playerArray;
+          var returnString = "";
+          if(winCondition == -1)
           {
-            response_obj = playerArray;
-            response_obj.push(time);
-            res.writeHead( 200 );
-            res.end( JSON.stringify( response_obj ) );
-          });
-      }
-      else
-      {
-        var response_obj = [];
-        var returnString = "";
-        if(winCondition = 0)
-        {
-          returnString = "EVERYONE IS DEAD! EVERYONE LOSES!";
-        }
-        if(winCondition = 1)
-        {
-          returnString = "THE MURDERER IS DEAD! THE INNOCENTS WIN!";
-        }
-        if(winCondition = 2)
-        {
-          returnString = "THE INNOCENTS ARE DEAD! THE MURDERER WINS!";
-        }
-        response_obj.push(returnString);
-        res.writeHead(200);
-        res.end(JSON.stringify(response_obj));
-      }
+            returnString = time/1000 + " seconds left to choose your fate";
+          }
+          else if(winCondition == 0)
+          {
+            returnString = "EVERYONE IS DEAD! EVERYONE LOSES!";
+          }
+          else if(winCondition == 1)
+          {
+            returnString = "THE MURDERER IS DEAD! THE INNOCENTS WIN!";
+          }
+          else if(winCondition == 2)
+          {
+            returnString = "THE INNOCENTS ARE DEAD! THE MURDERER WINS!";
+          }
+          response_obj.push(returnString);
+          res.writeHead( 200 );
+          res.end( JSON.stringify( response_obj ) );
+        });
     }
     else if ( req.url.indexOf( "get_player?" ) >= 0 )
     {
