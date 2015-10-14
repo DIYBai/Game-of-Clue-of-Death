@@ -160,26 +160,10 @@ function response( evt )
     var xhr = evt.target;
     //console.log( xhr.responseText );
     var player_data = JSON.parse( xhr.responseText );
-    if(player_data.length == 1)
-    {
-      var winState = player_data[0];
-      if(winState == 0)
-      {
-        displayMessage("EVERYONE IS DEAD! EVERYONE LOSES!");
-      }
-      else if(winState == 1)
-      {
-        displayMessage("THE MURDERER IS DEAD! THE INNOCENTS WIN!");
-      }
-      else if(winState == 2)
-      {
-        displayMessage("THE INNOCENTS ARE DEAD! THE MURDERER WINS!");
-      }
-      return;
-    }
-    var just_players = player_data.slice(0,player_data.length-1,1);
-    console.log("just_players: "+just_players);
-    var new_me = findMe(just_players, my_name);
+    var display = player_data.splice(player_data.length-1,1);
+    //var just_players = player_data.slice(0,player_data.length-1,1);
+    //console.log("just_players: "+just_players);
+    var new_me = findMe(player_data, my_name);
     if (my_player && (new_me.xpos != my_player.xpos || new_me.ypos != my_player.ypos))
     {
       moves++;
@@ -187,7 +171,7 @@ function response( evt )
     my_player = new_me;
     if (!my_player.dead && moves>2)
     {
-        drawButtons(just_players);
+        drawButtons(player_data);
     }
     else
     {
@@ -205,7 +189,7 @@ function response( evt )
             var cell = document.getElementById( "x"+i+"y"+j );
             var cell_content= "";
             //for (var player in player_data)
-            for(var k = 0; k < just_players.length; k++)
+            for(var k = 0; k < player_data.length; k++)
             {
               if (i==my_player.xpos || j==my_player.ypos ||my_player.dead)
               {
@@ -227,8 +211,9 @@ function response( evt )
                   }
                   else
                   {
-                    cell_content += " " +player.playerName;
+                    cell_content += player.playerName;
                   }
+                  cell_content +="<br>";
                 }
               }
               else {
@@ -239,7 +224,8 @@ function response( evt )
             cell.innerHTML = cell_content;
           }
       }
-    document.getElementById("time").innerHTML = player_data[player_data.length-1];
+    var seconds = player_data[player_data.length-1]/1000;
+    document.getElementById("time").innerHTML = display;
     window.setTimeout( pollServer, 1000 );
 }
 
