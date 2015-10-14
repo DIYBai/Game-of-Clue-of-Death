@@ -13,8 +13,7 @@ var time = 5000;
 
 function serverFun( req, res )
 {
-    // console.log( req );
-    console.log( "The URL: '", req.url, "'" );
+    //console.log( "The URL: '", req.url, "'" );
     var ipAddress = req.connection.remoteAddress;
     var cookies = game.parseCookies( req.headers );
 
@@ -28,25 +27,7 @@ function serverFun( req, res )
     if(req.url === "/" | req.url === "" | req.url === "/index.html")
     {
       req.url = "/newPlayer.html";
-      // game.checkNewPlayerHelper( ipAddress, function( bool )
-      //     {
-      //     //   if ( bool ) {
-      //     //     console.log("evaluated to true");
-          //     req.url = "/newPlayer.html";
-          //   }
-          //   else if(playing) {
-          //     req.url = "/play.html";
-          //   }
-          //   else {
-          //     req.url = "/ready.html";
-          //   }
-       var file_worked = serveFile(req, res);
-          //   if (!file_worked)
-          //   {
-          //     serveDynamic( req, res );
-          //   }
-          // });
-        //console.log("check new player " + checkNewPlayer(ipAddress));
+      var file_worked = serveFile(req, res);
     }
     else
     {
@@ -71,9 +52,7 @@ function serverFun( req, res )
               req.url = "/newPlayer.html"
             }
           });
-
         }
-
         var file_worked = serveFile(req, res);
         if (!file_worked)
         {
