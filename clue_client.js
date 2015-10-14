@@ -1,5 +1,5 @@
 var the_grid     = document.getElementById( 'grid' );
-var size = 5;
+var size = 7;
 var cell_select = null;
 var my_name;
 var is_killer;
@@ -129,12 +129,12 @@ function respondName( evt )
   if(is_killer)
   {
     displayMessage("You are the MURDERER. Kill all other players to win.");
-    window.setTimeout(displayMessage, 5000, "");
+    window.setTimeout(displayMessage, 10000, "");
   }
   else
   {
     displayMessage("You are innocent. Discover the murderer and kill them. But beware, if you kill another innocent, you become a murderer yourself.");
-    window.setTimeout(displayMessage, 5000, "");
+    window.setTimeout(displayMessage, 10000, "");
   }
 }
 
@@ -178,8 +178,8 @@ function response( evt )
     }
     var just_players = player_data.slice(0,player_data.length-1,1);
     //console.log(player_data);
-    var new_me = findMe(player_data, my_name);
-    if (new_me.xpos != my_player.xpos || new_me.ypos != my_player.ypos)
+    var new_me = findMe(just_players, my_name);
+    if (my_player && (new_me.xpos != my_player.xpos || new_me.ypos != my_player.ypos))
     {
       moves++;
     }
@@ -204,7 +204,7 @@ function response( evt )
             var cell = document.getElementById( "x"+i+"y"+j );
             var cell_content= "";
             //for (var player in player_data)
-            for(var k = 0; k < player_data.length-1; k++)
+            for(var k = 0; k < just_players.length; k++)
             {
               if (i==my_player.xpos || j==my_player.ypos ||my_player.dead)
               {
