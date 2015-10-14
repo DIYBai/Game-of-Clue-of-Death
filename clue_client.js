@@ -217,15 +217,17 @@ function response( evt )
                 var player = player_data[k];
                 if (player.xpos == i && player.ypos == j)
                 {
-                  cell_content += " " +player.playerName;
                   if (player.dead)
                   {
                     var corpse = document.createElement( div );
                     corpse.innerHTML = player.playerName;
                     corpse.style.color=corpse_color;
-                    cell_elem.innerHTML="";
-                    corpse.
-                    cell.appendChild(corpse)
+                    corpse.innerHTML="";
+                    cell.appendChild(corpse);
+                  }
+                  else
+                  {
+                    cell_content += " " +player.playerName;
                   }
                 }
               }
